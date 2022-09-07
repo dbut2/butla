@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "web",
+          "region": "australia-southeast2"
+        }
+      }
+    ]
+  }
+}
