@@ -1,5 +1,5 @@
 web:
   address: ":80"
   api:
-    address: "api-hqkniphctq-km.a.run.app:443"
+    address: "api-prod-hqkniphctq-km.a.run.app:443"
   shortHost: "but.la"

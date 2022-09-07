@@ -1,13 +1,40 @@
 {
-  "hosting": {
-    "rewrites": [
-      {
-        "source": "**",
-        "run": {
-          "serviceId": "web",
-          "region": "australia-southeast2"
+  "hosting": [
+    {
+      "site": "but-la",
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "web-prod",
+            "region": "australia-southeast2"
+          }
         }
-      }
-    ]
-  }
+      ]
+    },
+    {
+      "site": "but-la-dev",
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "web-dev",
+            "region": "australia-southeast2"
+          }
+        }
+      ]
+    },
+    {
+      "site": "but-la-test",
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "web-test",
+            "region": "australia-southeast2"
+          }
+        }
+      ]
+    }
+  ]
 }
