@@ -1,0 +1,5 @@
+web:
+  address: ":80"
+  api:
+    address: "test-api-server-hqkniphctq-km.a.run.app:443"
+  shortHost: "test-web-server-hqkniphctq-km.a.run.app"

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+	<style>
+        body {
+            background-color: cornflowerblue;
+        }
+
+        .vertical-center {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+			max-width: 80%;
+        }
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="input-group input-group-lg vertical-center">
+		<input id="url" type="url" class="form-control" placeholder="Url" aria-describedby="basic-addon1">
+		<div id="buttons" class="input-group-btn">
+			<!--<button id="paste" class="btn btn-default visible" type="button"><span class="glyphicon glyphicon-paste" aria-hidden="true"></span></button>-->
+			<button id="shorten" class="btn btn-default visible" type="button">Shorten</button>
+		</div>
+	</div>
+	<div hidden>
+		<button id="copy" class="btn btn-default" type="button"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button>
+	</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+	function shorten() {
+		$("#shorten").prop("disabled", true)
+
+		let req = {
+			"url": $("#url").val(),
+		};
+
+		$.post("/shorten", JSON.stringify(req), (d) => {
+			$("#buttons").children().replaceWith($("#copy"))
+			$("#buttons").children().not(":first").remove()
+			$("#url").val(d.link);
+		})
+	}
+
+	$("#paste").click(async () => {
+		let text = await navigator.clipboard.readText()
+		$("url").val(text)
+	})
+
+	$("#shorten").click(shorten)
+	$("#url").keypress((e) => {
+		if ($("#url").val() !== "" && e.keyCode === 13) {
+			shorten()
+		}
+	});
+
+	$("copy").hide();
+	$("#copy").click(async () => {
+		await navigator.clipboard.writeText("https://"+$("#url").val())
+	})
+</script>
+</body>
+</html>
