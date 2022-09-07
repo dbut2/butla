@@ -26,11 +26,11 @@ gen:
 
 .PHONY: web
 web:
-	docker build -f web.Dockerfile -t web .
+	docker build -f Dockerfile -t web .
 	docker run -e ENV=local -p 80:8080 -v ~/.config/gcloud:/root/.config/gcloud web
 
 .PHONY: deploy
 deploy:
-	docker build -f webserver.Dockerfile -t asia.gcr.io/but-la/test/web .
+	docker build -f Dockerfile -t asia.gcr.io/but-la/test/web .
 	docker push asia.gcr.io/but-la/test/web
-	gcloud run services update test-web --platform=managed --image=asia.gcr.io/but-la/test/web --region=australia-southeast2
+	gcloud run services update web-test --platform=managed --image=asia.gcr.io/but-la/test/web --region=australia-southeast2
