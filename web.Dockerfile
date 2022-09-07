@@ -7,6 +7,7 @@ COPY ./config ./config
 COPY ./internal ./internal
 COPY ./go.mod go.mod
 COPY ./go.sum go.sum
+COPY ./main.go ./main.go
 
 RUN go build -o web .
 
