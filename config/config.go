@@ -1,31 +1,31 @@
 package config
 
 import (
-	"flag"
-	"os"
+	"embed"
 
 	"github.com/dbut2/shortener-web/internal/web"
 	"gopkg.in/yaml.v3"
+)
+
+var (
+	//go:embed *.yaml
+	envs embed.FS
 )
 
 type Config struct {
 	Web web.Config `yaml:"web"`
 }
 
-func LoadConfig() (Config, error) {
-	configPath := flag.String("config-path", "config/local.yaml", "")
-	flag.Parse()
-
-	bytes, err := os.ReadFile(*configPath)
+func LoadConfig(env string) (*Config, error) {
+	bytes, err := envs.ReadFile(env + ".yaml")
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 
-	config := Config{}
-
-	err = yaml.Unmarshal(bytes, &config)
+	config := &Config{}
+	err = yaml.Unmarshal(bytes, config)
 	if err != nil {
-		return Config{}, err
+		return nil, err
 	}
 
 	return config, nil

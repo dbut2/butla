@@ -8,7 +8,12 @@ import (
 )
 
 func main() {
-	c, err := config.LoadConfig()
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "local"
+	}
+
+	c, err := config.LoadConfig(env)
 	if err != nil {
 		panic(err.Error())
 	}
