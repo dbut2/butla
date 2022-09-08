@@ -1,0 +1,117 @@
+name: Deploy
+on:
+  issue_comment:
+    types:
+      - created
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: asia.gcr.io/but-la/web/web
+  PROJECT_ID: but-la
+  REGION: australia-southeast2
+
+jobs:
+  build:
+    if: github.ref == 'refs/head/main' || github.event.comment.body == '/test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: "access_token"
+
+      - name: "Docker login"
+        run: |
+          echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
+
+      - name: "Build and push"
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }} .
+          docker tag  ${{ env.IMAGE_NAME }} ${{ env.IMAGE_NAME }}:latest
+          docker tag  ${{ env.IMAGE_NAME }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy-test:
+    if: github.event.comment.body = '/test'
+    runs-on: ubuntu-latest
+    env:
+      ENV: test
+    environment:
+      name: test
+      url: https://test.but.la/shorten
+    needs:
+      - build
+
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          region: ${{ env.REGION }}
+          env_vars: ENV=${{ env.ENV }}
+          service: web-test
+          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy-dev:
+    if: github.ref == 'refs/head/main'
+    runs-on: ubuntu-latest
+    env:
+      ENV: dev
+    environment:
+      name: dev
+      url: https://dev.but.la/shorten
+    needs:
+      - build
+
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          region: ${{ env.REGION }}
+          env_vars: ENV=${{ env.ENV }}
+          service: web-dev
+          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy-prod:
+    if: github.ref == 'refs/head/main'
+    runs-on: ubuntu-latest
+    env:
+      ENV: prod
+    environment:
+      name: prod
+      url: https://but.la/shorten
+    needs:
+      - build
+      - deploy-dev
+
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          region: ${{ env.REGION }}
+          env_vars: ENV=${{ env.ENV }}
+          service: web-prod
+          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
