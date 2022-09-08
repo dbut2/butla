@@ -1,11 +1,9 @@
 name: Deploy
 on:
-  issue_comment:
-    types:
-      - created
   push:
     branches:
       - main
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: asia.gcr.io/but-la/web/web
@@ -14,7 +12,6 @@ env:
 
 jobs:
   build:
-    if: github.ref == 'refs/head/main' || github.event.comment.body == '/test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,7 +35,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-test:
-    if: github.event.comment.body == '/test'
+    if: github.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       ENV: test
