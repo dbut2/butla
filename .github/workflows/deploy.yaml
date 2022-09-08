@@ -1,5 +1,8 @@
 name: Deploy
-on: push
+on:
+  push:
+    branches:
+      - main
 
 env:
   IMAGE_NAME: asia.gcr.io/but-la/web/web
