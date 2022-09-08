@@ -17,4 +17,4 @@ EXPOSE ${PORT}
 
 ENV ENV=local
 
-CMD ./web --config-path config/${ENV}.yaml
+CMD ./web
