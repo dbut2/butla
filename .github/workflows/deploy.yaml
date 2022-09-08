@@ -1,5 +1,8 @@
 name: Deploy
 on:
+  issue_comment:
+    types:
+      - created
   push:
     branches:
       - main
@@ -11,6 +14,7 @@ env:
 
 jobs:
   build:
+    if: github.ref == 'refs/head/main' || github.event.comment.body == '/test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -34,6 +38,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-test:
+    if: github.event.comment.body = '/test'
     runs-on: ubuntu-latest
     env:
       ENV: test
