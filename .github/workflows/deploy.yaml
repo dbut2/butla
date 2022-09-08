@@ -38,7 +38,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-test:
-    if: github.event.comment.body = '/test'
+    if: github.event.comment.body == '/test'
     runs-on: ubuntu-latest
     env:
       ENV: test
