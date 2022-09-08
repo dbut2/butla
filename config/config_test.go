@@ -12,7 +12,7 @@ func TestConfigs(t *testing.T) {
 	files, err := envs.ReadDir(".")
 	assert.NoError(t, err)
 
-	r, err := regexp.Compile("^.*\\.yaml$")
+	r, err := regexp.Compile(`^.*\.yaml$`)
 	assert.NoError(t, err)
 
 	for _, file := range files {
