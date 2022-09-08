@@ -35,7 +35,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-test:
-    if: github.event == 'workflow_dispatch'
+    if: ${{ github.event == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     env:
       ENV: test
@@ -61,7 +61,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-dev:
-    if: github.ref == 'refs/head/main'
+    if: ${{ github.ref == 'refs/head/main' }}
     runs-on: ubuntu-latest
     env:
       ENV: dev
@@ -87,7 +87,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-prod:
-    if: github.ref == 'refs/head/main'
+    if: ${{ github.ref == 'refs/head/main' }}
     runs-on: ubuntu-latest
     env:
       ENV: prod
