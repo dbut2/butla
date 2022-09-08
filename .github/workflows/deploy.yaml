@@ -2,11 +2,11 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - 'main'
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: asia.gcr.io/but-la/web/web
+  IMAGE_NAME: asia.gcr.io/but-la/web
   PROJECT_ID: but-la
   REGION: australia-southeast2
 
@@ -35,7 +35,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-test:
-    if: ${{ github.event == 'workflow_dispatch' }}
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       ENV: test
@@ -46,6 +46,8 @@ jobs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
@@ -61,7 +63,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-dev:
-    if: ${{ github.ref == 'refs/head/main' }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       ENV: dev
@@ -72,6 +74,8 @@ jobs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
@@ -87,7 +91,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-prod:
-    if: ${{ github.ref == 'refs/head/main' }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       ENV: prod
@@ -99,6 +103,8 @@ jobs:
       - deploy-dev
 
     steps:
+      - uses: actions/checkout@v3
+
       - id: 'auth'
         uses: 'google-github-actions/auth@v0'
         with:
