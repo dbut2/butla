@@ -1,9 +1,11 @@
 package web
 
 import (
+	"context"
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 	"net/http"
 	"time"
@@ -22,6 +24,44 @@ type Server struct {
 	store     store.Store
 }
 
+type CacheLog struct {
+	cache store.Cache
+}
+
+func (c CacheLog) Set(ctx context.Context, link models.Link) {
+	log.Print("cache: set")
+	c.cache.Set(ctx, link)
+}
+
+func (c CacheLog) Get(ctx context.Context, code string) models.Link {
+	log.Print("cache: get")
+	return c.cache.Get(ctx, code)
+}
+
+func (c CacheLog) Has(ctx context.Context, code string) bool {
+	log.Print("cache: has")
+	return c.cache.Has(ctx, code)
+}
+
+type StoreLog struct {
+	store store.Store
+}
+
+func (s StoreLog) Set(ctx context.Context, link models.Link) error {
+	log.Print("store: set")
+	return s.store.Set(ctx, link)
+}
+
+func (s StoreLog) Get(ctx context.Context, code string) (models.Link, error) {
+	log.Print("store: get")
+	return s.store.Get(ctx, code)
+}
+
+func (s StoreLog) Has(ctx context.Context, code string) (bool, error) {
+	log.Print("store: has")
+	return s.store.Has(ctx, code)
+}
+
 func New(config Config) (*Server, error) {
 	db, err := database.NewDatabase(config.Database)
 	if err != nil {
@@ -34,8 +74,8 @@ func New(config Config) (*Server, error) {
 	}
 
 	s := store.CacheStore{
-		Primary: db,
-		Cache:   r,
+		Primary: StoreLog{db},
+		Cache:   CacheLog{r},
 	}
 
 	return &Server{
@@ -97,7 +137,7 @@ func (s *Server) Run() error {
 	})
 
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusPermanentRedirect, "default")
+		c.Redirect(http.StatusMovedPermanently, "default")
 	})
 
 	r.GET("/:code", func(c *gin.Context) {
