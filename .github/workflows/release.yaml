@@ -1,0 +1,18 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Tag
+        uses: K-Phoen/semver-release-action@master
+        with:
+          release_branch: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
