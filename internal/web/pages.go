@@ -5,4 +5,4 @@ import (
 )
 
 //go:embed index.html
-var index string
+var index []byte

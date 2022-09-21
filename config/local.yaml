@@ -1,6 +1,6 @@
 web:
   address: ":80"
   api:
-    address: ":8080"
+    address: "localhost:8080"
     insecure: true
   shortHost: "localhost"
