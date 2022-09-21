@@ -1,5 +1,7 @@
 web:
   address: ":80"
-  api:
-    address: "api-prod-hqkniphctq-km.a.run.app:443"
   shortHost: "but.la"
+  database:
+    gsmResourceID: projects/540755457828/secrets/database-config/versions/latest
+  redis:
+    gsmResourceID: projects/540755457828/secrets/redis-config/versions/latest

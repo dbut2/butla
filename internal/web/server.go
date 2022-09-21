@@ -1,45 +1,47 @@
 package web
 
 import (
-	"crypto/tls"
+	"crypto/rand"
+	"errors"
 	"fmt"
+	"math/big"
 	"net/http"
 	"time"
 
-	"github.com/dbut2/shortener-web/pkg/ptr"
-	pb "github.com/dbut2/shortener/pkg/api/shortener/v1alpha1"
+	"github.com/dbut2/shortener/pkg/database"
+	"github.com/dbut2/shortener/pkg/models"
+	"github.com/dbut2/shortener/pkg/redis"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/dbut2/shortener/pkg/store"
 )
 
 type Server struct {
 	address   string
 	shortHost string
-	client    pb.ShortServiceClient
+	store     store.Store
 }
 
 func New(config Config) (*Server, error) {
-	creds := credentials.NewTLS(&tls.Config{})
-	if config.Api.Insecure {
-		creds = insecure.NewCredentials()
-	}
-
-	cc, err := grpc.Dial(config.Api.Host, grpc.WithTransportCredentials(creds))
+	db, err := database.NewDatabase(config.Database)
 	if err != nil {
 		return nil, err
 	}
 
-	client := pb.NewShortServiceClient(cc)
+	r, err := redis.NewRedis(config.Redis)
+	if err != nil {
+		return nil, err
+	}
+
+	s := store.CacheStore{
+		Primary: db,
+		Cache:   r,
+	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		client:    client,
+		store:     s,
 	}, nil
 }
 
@@ -55,17 +57,33 @@ func (s *Server) Run() error {
 			Url string `json:"url"`
 		}{}
 
-		err := c.BindJSON(&b)
-		if err != nil {
-			_ = c.AbortWithError(http.StatusInternalServerError, err)
-			return
+		var code string
+		for {
+			code = randomCode(6)
+			has, err := s.store.Has(c, code)
+			if err != nil {
+				_ = c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+			if !has {
+				break
+			}
 		}
 
-		resp, err := s.client.Shorten(c, &pb.ShortenRequest{
-			Url:    b.Url,
-			Expiry: timestamppb.New(time.Now().Add(time.Minute * 10)),
-			Ip:     ptr.To(c.ClientIP()),
-		})
+		link := models.Link{
+			Code: code,
+			Url:  b.Url,
+			Expiry: models.NullTime{
+				Valid: true,
+				Value: time.Now().Add(time.Minute * 10),
+			},
+			IP: models.NullString{
+				Valid: true,
+				Value: c.ClientIP(),
+			},
+		}
+
+		err := s.store.Set(c, link)
 		if err != nil {
 			_ = c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -74,7 +92,7 @@ func (s *Server) Run() error {
 		c.JSON(http.StatusOK, struct {
 			Link string `json:"link"`
 		}{
-			Link: fmt.Sprintf("%s/%s", s.shortHost, resp.GetCode()),
+			Link: fmt.Sprintf("%s/%s", s.shortHost, code),
 		})
 	})
 
@@ -84,27 +102,41 @@ func (s *Server) Run() error {
 
 	r.GET("/:code", func(c *gin.Context) {
 		code := c.Param("code")
-		ip := c.ClientIP()
 
-		resp, err := s.client.Lengthen(c, &pb.LengthenRequest{
-			Code: code,
-			Ip:   ip,
-		})
-
+		link, err := s.store.Get(c, code)
 		if err != nil {
-			s := status.Convert(err)
-			if s.Code() == codes.NotFound {
-				_ = c.AbortWithError(http.StatusNotFound, err)
-				return
-			}
-
 			_ = c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 
-		long := resp.GetUrl()
-		c.Redirect(http.StatusMovedPermanently, long)
+		if link.Expiry.Valid && link.Expiry.Value.Before(time.Now()) {
+			_ = c.AbortWithError(http.StatusInternalServerError, errors.New("link expired"))
+			return
+		}
+
+		if link.IP.Valid && link.IP.Value != c.ClientIP() {
+			_ = c.AbortWithError(http.StatusInternalServerError, errors.New("incorrect ip"))
+			return
+		}
+
+		c.Redirect(http.StatusMovedPermanently, link.Url)
 	})
 
 	return r.Run(s.address)
+}
+
+func randomCode(length int) string {
+	chars := "abcdefghijklmnopqrstuvwxyz1234567890"
+	code := ""
+
+	for len(code) < length {
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		code += string(chars[n.Int64()])
+	}
+
+	return code
 }
