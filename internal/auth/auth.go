@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/api/idtoken"
 	"google.golang.org/grpc"
@@ -11,13 +12,22 @@ import (
 func authContext(ctx context.Context, audience string) (context.Context, error) {
 	ts, err := idtoken.NewTokenSource(ctx, audience)
 	if err != nil {
-		return ctx, err
+		return nil, err
 	}
 	token, err := ts.Token()
 	if err != nil {
-		return ctx, err
+		return nil, err
 	}
-	return metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer: "+token.AccessToken), nil
+	return metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token.AccessToken), nil
+}
+
+func AuthContext(ctx context.Context, audience string) context.Context {
+	ctx, err := authContext(ctx, audience)
+	if err != nil {
+		fmt.Println("Big oopsies: ", err.Error())
+		panic(err.Error())
+	}
+	return ctx
 }
 
 func Interceptor(audience string) grpc.UnaryClientInterceptor {

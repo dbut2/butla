@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"net/http"
@@ -23,6 +24,7 @@ type Server struct {
 	address   string
 	shortHost string
 	client    pb.ShortServiceClient
+	auth      func(ctx context.Context) context.Context
 }
 
 func New(config Config) (*Server, error) {
@@ -31,7 +33,7 @@ func New(config Config) (*Server, error) {
 		creds = insecure.NewCredentials()
 	}
 
-	cc, err := grpc.Dial(config.Api.Host, grpc.WithTransportCredentials(creds), grpc.WithUnaryInterceptor(auth.Interceptor(strings.Split(config.Api.Host, ":")[0])))
+	cc, err := grpc.Dial(config.Api.Host, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +44,9 @@ func New(config Config) (*Server, error) {
 		address:   config.Address,
 		shortHost: config.ShortHost,
 		client:    client,
+		auth: func(ctx context.Context) context.Context {
+			return auth.AuthContext(ctx, "https://"+strings.Split(config.Api.Host, ":")[0])
+		},
 	}, nil
 }
 
@@ -63,7 +68,7 @@ func (s *Server) Run() error {
 			return
 		}
 
-		resp, err := s.client.Shorten(c, &pb.ShortenRequest{
+		resp, err := s.client.Shorten(s.auth(c), &pb.ShortenRequest{
 			Url:    b.Url,
 			Expiry: timestamppb.New(time.Now().Add(time.Minute * 10)),
 			Ip:     ptr.To(c.ClientIP()),
@@ -88,7 +93,7 @@ func (s *Server) Run() error {
 		code := c.Param("code")
 		ip := c.ClientIP()
 
-		resp, err := s.client.Lengthen(c, &pb.LengthenRequest{
+		resp, err := s.client.Lengthen(s.auth(c), &pb.LengthenRequest{
 			Code: code,
 			Ip:   ip,
 		})
