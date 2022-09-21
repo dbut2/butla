@@ -4,8 +4,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/dbut2/shortener-web/internal/auth"
 	"github.com/dbut2/shortener-web/pkg/ptr"
 	pb "github.com/dbut2/shortener/pkg/api/shortener/v1alpha1"
 	"github.com/gin-gonic/gin"
@@ -29,7 +31,7 @@ func New(config Config) (*Server, error) {
 		creds = insecure.NewCredentials()
 	}
 
-	cc, err := grpc.Dial(config.Api.Host, grpc.WithTransportCredentials(creds))
+	cc, err := grpc.Dial(config.Api.Host, grpc.WithTransportCredentials(creds), grpc.WithUnaryInterceptor(auth.Interceptor(strings.Split(config.Api.Host, ":")[0])))
 	if err != nil {
 		return nil, err
 	}
