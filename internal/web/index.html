@@ -21,16 +21,20 @@
 </head>
 <body>
 <div class="container">
-	<div class="input-group input-group-lg vertical-center">
-		<input id="url" type="url" class="form-control" placeholder="Url" aria-describedby="basic-addon1">
-		<div id="buttons" class="input-group-btn">
-			<!--<button id="paste" class="btn btn-default visible" type="button"><span class="glyphicon glyphicon-paste" aria-hidden="true"></span></button>-->
-			<button id="shorten" class="btn btn-default visible" type="button">Shorten</button>
+	<div class="vertical-center">
+		<div class="input-group input-group-lg">
+			<input id="url" type="url" class="form-control" placeholder="Url" aria-describedby="basic-addon1">
+			<div id="buttons" class="input-group-btn">
+				<!--<button id="paste" class="btn btn-default visible" type="button"><span class="glyphicon glyphicon-paste" aria-hidden="true"></span></button>-->
+				<button id="shorten" class="btn btn-default visible" type="button">Shorten</button>
+			</div>
 		</div>
+		<br />
+		<div class="alert alert-warning" role="alert"><b>Warning! </b> Due to abuse, shortened links expire after 10 minutes and are limited to the requested IP address.</div>
 	</div>
-	<div hidden>
-		<button id="copy" class="btn btn-default" type="button"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button>
-	</div>
+</div>
+<div hidden>
+	<button id="copy" class="btn btn-default" type="button"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
@@ -60,7 +64,6 @@
 		}
 	});
 
-	$("copy").hide();
 	$("#copy").click(async () => {
 		await navigator.clipboard.writeText("https://"+$("#url").val())
 	})

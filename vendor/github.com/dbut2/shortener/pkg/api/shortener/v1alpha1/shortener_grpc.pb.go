@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: shortener/v1/shortener.proto
+// source: shortener/v1alpha1/shortener.proto
 
 package shortener
 
@@ -36,7 +36,7 @@ func NewShortServiceClient(cc grpc.ClientConnInterface) ShortServiceClient {
 
 func (c *shortServiceClient) Shorten(ctx context.Context, in *ShortenRequest, opts ...grpc.CallOption) (*ShortenResponse, error) {
 	out := new(ShortenResponse)
-	err := c.cc.Invoke(ctx, "/shortener.v1.ShortService/Shorten", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/shortener.v1alpha1.ShortService/Shorten", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *shortServiceClient) Shorten(ctx context.Context, in *ShortenRequest, op
 
 func (c *shortServiceClient) Lengthen(ctx context.Context, in *LengthenRequest, opts ...grpc.CallOption) (*LengthenResponse, error) {
 	out := new(LengthenResponse)
-	err := c.cc.Invoke(ctx, "/shortener.v1.ShortService/Lengthen", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/shortener.v1alpha1.ShortService/Lengthen", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func _ShortService_Shorten_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/shortener.v1.ShortService/Shorten",
+		FullMethod: "/shortener.v1alpha1.ShortService/Shorten",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShortServiceServer).Shorten(ctx, req.(*ShortenRequest))
@@ -112,7 +112,7 @@ func _ShortService_Lengthen_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/shortener.v1.ShortService/Lengthen",
+		FullMethod: "/shortener.v1alpha1.ShortService/Lengthen",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ShortServiceServer).Lengthen(ctx, req.(*LengthenRequest))
@@ -124,7 +124,7 @@ func _ShortService_Lengthen_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ShortService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "shortener.v1.ShortService",
+	ServiceName: "shortener.v1alpha1.ShortService",
 	HandlerType: (*ShortServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -137,5 +137,5 @@ var ShortService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "shortener/v1/shortener.proto",
+	Metadata: "shortener/v1alpha1/shortener.proto",
 }
