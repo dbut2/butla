@@ -86,7 +86,7 @@ func (d Database) Get(ctx context.Context, code string) (models.Link, bool, erro
 	}
 
 	if !rows.Next() {
-		return models.Link{}, false, errors.New("not found")
+		return models.Link{}, false, nil
 	}
 
 	var dbl dbLink
