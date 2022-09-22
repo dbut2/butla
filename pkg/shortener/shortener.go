@@ -89,6 +89,10 @@ func (d shortener) ShortenCode(ctx context.Context, url string, code string, met
 		md = m(md)
 	}
 
+	if url == "" {
+		return models.Link{}, ErrUnspecified
+	}
+
 	_, has, err := d.store.Get(ctx, code)
 	if err != nil {
 		return models.Link{}, ErrStore

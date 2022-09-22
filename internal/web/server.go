@@ -49,10 +49,19 @@ func (s *Server) Run() error {
 		c.Data(http.StatusOK, "text/html", index)
 	})
 
+	r.GET("/404", func(c *gin.Context) {
+		c.Data(http.StatusOK, "text/html", e404)
+	})
+
 	r.POST("/shorten", func(c *gin.Context) {
 		b := struct {
 			Url string `json:"url"`
 		}{}
+		err := c.BindJSON(&b)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
 
 		link, err := s.shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
 		if err != nil {
@@ -96,7 +105,8 @@ func (s *Server) Run() error {
 		if err != nil {
 			switch err {
 			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
-				_ = c.AbortWithError(http.StatusNotFound, err)
+				_ = c.Error(err)
+				c.Data(http.StatusNotFound, "text/html", e404)
 			default:
 				_ = c.AbortWithError(http.StatusInternalServerError, err)
 			}
