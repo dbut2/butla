@@ -41,10 +41,14 @@ func (r Redis) Set(ctx context.Context, link models.Link) error {
 
 func (r Redis) Get(ctx context.Context, code string) (models.Link, error) {
 	var link models.Link
-	err := r.client.Get(ctx, code).Scan(&link)
-	return link, err
+	g := r.client.Get(ctx, code)
+	if g.Err() != nil {
+		return models.Link{}, g.Err()
+	}
+	return link, g.Scan(&link)
 }
 
 func (r Redis) Has(ctx context.Context, code string) (bool, error) {
-	return r.client.Exists(ctx, code).Val() > 0, nil
+	e := r.client.Exists(ctx, code)
+	return e.Val() > 0, e.Err()
 }

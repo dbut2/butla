@@ -1,18 +1,13 @@
 package web
 
 import (
-	"context"
-	"crypto/rand"
-	"errors"
 	"fmt"
-	"log"
-	"math/big"
 	"net/http"
 	"time"
 
 	"github.com/dbut2/shortener/pkg/database"
-	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/redis"
+	"github.com/dbut2/shortener/pkg/shortener"
 	"github.com/gin-gonic/gin"
 
 	"github.com/dbut2/shortener/pkg/store"
@@ -21,37 +16,7 @@ import (
 type Server struct {
 	address   string
 	shortHost string
-	store     store.Store
-}
-
-func LogStore(store store.Store, name string) store.Store {
-	return logStore{
-		name:  name,
-		store: store,
-	}
-}
-
-type logStore struct {
-	name  string
-	store store.Store
-}
-
-func (l logStore) Set(ctx context.Context, link models.Link) error {
-	log.Printf("%s: set", l.name)
-	defer log.Printf("%s: setted", l.name)
-	return l.store.Set(ctx, link)
-}
-
-func (l logStore) Get(ctx context.Context, code string) (models.Link, error) {
-	log.Printf("%s: get", l.name)
-	defer log.Printf("%s: getted", l.name)
-	return l.store.Get(ctx, code)
-}
-
-func (l logStore) Has(ctx context.Context, code string) (bool, error) {
-	log.Printf("%s: has", l.name)
-	defer log.Printf("%s: hassed", l.name)
-	return l.store.Has(ctx, code)
+	shortener shortener.Shortener
 }
 
 func New(config Config) (*Server, error) {
@@ -66,14 +31,14 @@ func New(config Config) (*Server, error) {
 	}
 
 	s := store.CacheStore{
-		Primary: LogStore(db, "primary"),
-		Cache:   LogStore(r, "cache"),
+		Primary: store.Log(db, "primary"),
+		Cache:   store.Log(r, "cache"),
 	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		store:     LogStore(s, "main"),
+		shortener: shortener.New(store.Log(s, "main")),
 	}, nil
 }
 
@@ -89,65 +54,52 @@ func (s *Server) Run() error {
 			Url string `json:"url"`
 		}{}
 
-		var code string
-		for {
-			code = randomCode(6)
-			has, err := s.store.Has(c, code)
-			if err != nil {
-				_ = c.AbortWithError(http.StatusInternalServerError, err)
-				return
-			}
-			if !has {
-				break
-			}
-		}
-
-		link := models.Link{
-			Code: code,
-			Url:  b.Url,
-			Expiry: models.NullTime{
-				Valid: true,
-				Value: time.Now().Add(time.Minute * 10),
-			},
-			IP: models.NullString{
-				Valid: true,
-				Value: c.ClientIP(),
-			},
-		}
-
-		err := s.store.Set(c, link)
+		link, err := s.shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
 		if err != nil {
-			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			switch err {
+			case shortener.ErrAlreadyExists:
+				_ = c.AbortWithError(http.StatusConflict, err)
+			default:
+				_ = c.AbortWithError(http.StatusInternalServerError, err)
+			}
 			return
 		}
 
 		c.JSON(http.StatusOK, struct {
 			Link string `json:"link"`
 		}{
-			Link: fmt.Sprintf("%s/%s", s.shortHost, code),
+			Link: fmt.Sprintf("%s/%s", s.shortHost, link.Code),
 		})
 	})
 
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "default")
+		code := "default"
+
+		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+		if err != nil {
+			switch err {
+			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
+				_ = c.AbortWithError(http.StatusNotFound, err)
+			default:
+				_ = c.AbortWithError(http.StatusInternalServerError, err)
+			}
+			return
+		}
+
+		c.Redirect(http.StatusMovedPermanently, link.Url)
 	})
 
 	r.GET("/:code", func(c *gin.Context) {
 		code := c.Param("code")
 
-		link, err := s.store.Get(c, code)
+		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
-			_ = c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
-
-		if link.Expiry.Valid && link.Expiry.Value.Before(time.Now()) {
-			_ = c.AbortWithError(http.StatusInternalServerError, errors.New("link expired"))
-			return
-		}
-
-		if link.IP.Valid && link.IP.Value != c.ClientIP() {
-			_ = c.AbortWithError(http.StatusInternalServerError, errors.New("incorrect ip"))
+			switch err {
+			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
+				_ = c.AbortWithError(http.StatusNotFound, err)
+			default:
+				_ = c.AbortWithError(http.StatusInternalServerError, err)
+			}
 			return
 		}
 
@@ -155,20 +107,4 @@ func (s *Server) Run() error {
 	})
 
 	return r.Run(s.address)
-}
-
-func randomCode(length int) string {
-	chars := "abcdefghijklmnopqrstuvwxyz1234567890"
-	code := ""
-
-	for len(code) < length {
-		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
-		if err != nil {
-			panic(err.Error())
-		}
-
-		code += string(chars[n.Int64()])
-	}
-
-	return code
 }
