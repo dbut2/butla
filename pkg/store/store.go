@@ -35,8 +35,10 @@ func (c CacheStore) Get(ctx context.Context, code string) (models.Link, bool, er
 	if err != nil {
 		return models.Link{}, false, err
 	}
-	_ = c.Cache.Set(ctx, link)
-	return link, true, nil
+	if has {
+		_ = c.Cache.Set(ctx, link)
+	}
+	return link, has, nil
 }
 
 func Log(store Store, name string) Store {
