@@ -24,7 +24,7 @@ type Database struct {
 	db *sql.DB
 }
 
-var _ = store.Store(nil).(Database)
+var _ store.Store = new(Database)
 
 func NewDatabase(c Config) (*Database, error) {
 	err := secrets.LoadSecret(&c)

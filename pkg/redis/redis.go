@@ -20,7 +20,7 @@ type Redis struct {
 	client *redis.Client
 }
 
-var _ = store.Store(nil).(Redis)
+var _ store.Store = new(Redis)
 
 func NewRedis(config Config) (*Redis, error) {
 	err := secrets.LoadSecret(&config)
