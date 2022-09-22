@@ -50,7 +50,11 @@ func (s *Server) Run() error {
 	})
 
 	r.GET("/404", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/html", e404)
+		c.Data(http.StatusNotFound, "text/html", e404)
+	})
+
+	r.GET("/500", func(c *gin.Context) {
+		c.Data(http.StatusInternalServerError, "text/html", e500)
 	})
 
 	r.POST("/shorten", func(c *gin.Context) {
@@ -86,11 +90,12 @@ func (s *Server) Run() error {
 
 		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
+			_ = c.Error(err)
 			switch err {
 			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
-				_ = c.AbortWithError(http.StatusNotFound, err)
+				c.Data(http.StatusNotFound, "text/html", e404)
 			default:
-				_ = c.AbortWithError(http.StatusInternalServerError, err)
+				c.Data(http.StatusNotFound, "text/html", e500)
 			}
 			return
 		}
@@ -103,12 +108,12 @@ func (s *Server) Run() error {
 
 		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
+			_ = c.Error(err)
 			switch err {
 			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
-				_ = c.Error(err)
 				c.Data(http.StatusNotFound, "text/html", e404)
 			default:
-				_ = c.AbortWithError(http.StatusInternalServerError, err)
+				c.Data(http.StatusNotFound, "text/html", e500)
 			}
 			return
 		}
