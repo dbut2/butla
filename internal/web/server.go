@@ -31,16 +31,21 @@ type CacheLog struct {
 func (c CacheLog) Set(ctx context.Context, link models.Link) {
 	log.Print("cache: set")
 	c.cache.Set(ctx, link)
+	log.Print("cache: setted")
 }
 
 func (c CacheLog) Get(ctx context.Context, code string) models.Link {
 	log.Print("cache: get")
-	return c.cache.Get(ctx, code)
+	link := c.cache.Get(ctx, code)
+	log.Print("cache: getted")
+	return link
 }
 
 func (c CacheLog) Has(ctx context.Context, code string) bool {
 	log.Print("cache: has")
-	return c.cache.Has(ctx, code)
+	has := c.cache.Has(ctx, code)
+	log.Print("cache: hassed")
+	return has
 }
 
 type StoreLog struct {
