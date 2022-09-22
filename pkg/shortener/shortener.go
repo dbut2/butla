@@ -19,7 +19,7 @@ type Shortener interface {
 
 type md struct {
 	expiry models.NullTime
-	ip models.NullString
+	ip     models.NullString
 }
 
 type Metadata func(md md) md
@@ -56,7 +56,7 @@ func (d shortener) Shorten(ctx context.Context, url string, metadata ...Metadata
 	var code string
 	for {
 		code = randomCode(6)
-		has, err := d.store.Has(ctx, code)
+		_, has, err := d.store.Get(ctx, code)
 		if err != nil {
 			log.Print(err.Error())
 			return models.Link{}, ErrStore
@@ -89,7 +89,7 @@ func (d shortener) ShortenCode(ctx context.Context, url string, code string, met
 		md = m(md)
 	}
 
-	has, err := d.store.Has(ctx, code)
+	_, has, err := d.store.Get(ctx, code)
 	if err != nil {
 		return models.Link{}, ErrStore
 	}
@@ -119,19 +119,13 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 		md = m(md)
 	}
 
-	has, err := d.store.Has(ctx, code)
+	link, has, err := d.store.Get(ctx, code)
 	if err != nil {
 		log.Print(err.Error())
 		return models.Link{}, ErrStore
 	}
 	if !has {
 		return models.Link{}, ErrNotFound
-	}
-
-	link, err := d.store.Get(ctx, code)
-	if err != nil {
-		log.Print(err.Error())
-		return models.Link{}, ErrStore
 	}
 
 	if link.Expiry.Valid && link.Expiry.Value.Before(time.Now()) {
@@ -144,4 +138,3 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 
 	return link, nil
 }
-

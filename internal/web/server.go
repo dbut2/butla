@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/dbut2/shortener/pkg/database"
 	"github.com/dbut2/shortener/pkg/redis"
 	"github.com/dbut2/shortener/pkg/shortener"
-	"github.com/gin-gonic/gin"
-
 	"github.com/dbut2/shortener/pkg/store"
 )
 

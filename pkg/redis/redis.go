@@ -6,6 +6,7 @@ import (
 
 	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/secrets"
+	"github.com/dbut2/shortener/pkg/store"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -18,6 +19,8 @@ type Config struct {
 type Redis struct {
 	client *redis.Client
 }
+
+var _ = store.Store(nil).(Redis)
 
 func NewRedis(config Config) (*Redis, error) {
 	err := secrets.LoadSecret(&config)
@@ -39,16 +42,16 @@ func (r Redis) Set(ctx context.Context, link models.Link) error {
 	return r.client.Set(ctx, link.Code, link, expiry).Err()
 }
 
-func (r Redis) Get(ctx context.Context, code string) (models.Link, error) {
-	var link models.Link
+func (r Redis) Get(ctx context.Context, code string) (models.Link, bool, error) {
+	if r.client.Exists(ctx, code).Val() == 0 {
+		return models.Link{}, false, nil
+	}
+
 	g := r.client.Get(ctx, code)
 	if g.Err() != nil {
-		return models.Link{}, g.Err()
+		return models.Link{}, false, g.Err()
 	}
-	return link, g.Scan(&link)
-}
 
-func (r Redis) Has(ctx context.Context, code string) (bool, error) {
-	e := r.client.Exists(ctx, code)
-	return e.Val() > 0, e.Err()
+	var link models.Link
+	return link, true, g.Scan(&link)
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/secrets"
+	"github.com/dbut2/shortener/pkg/store"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -22,6 +23,8 @@ type Config struct {
 type Database struct {
 	db *sql.DB
 }
+
+var _ = store.Store(nil).(Database)
 
 func NewDatabase(c Config) (*Database, error) {
 	err := secrets.LoadSecret(&c)
@@ -76,20 +79,20 @@ func (d Database) Set(ctx context.Context, link models.Link) error {
 	return nil
 }
 
-func (d Database) Get(ctx context.Context, code string) (models.Link, error) {
+func (d Database) Get(ctx context.Context, code string) (models.Link, bool, error) {
 	rows, err := d.db.QueryContext(ctx, "SELECT code, url, expiry, ip FROM links WHERE code = ?", code)
 	if err != nil {
-		return models.Link{}, err
+		return models.Link{}, false, err
 	}
 
 	if !rows.Next() {
-		return models.Link{}, errors.New("not found")
+		return models.Link{}, false, errors.New("not found")
 	}
 
 	var dbl dbLink
 	err = rows.Scan(&dbl.code, &dbl.url, &dbl.expiry, &dbl.ip)
 	if err != nil {
-		return models.Link{}, err
+		return models.Link{}, false, err
 	}
 
 	link := models.Link{
@@ -105,16 +108,7 @@ func (d Database) Get(ctx context.Context, code string) (models.Link, error) {
 		},
 	}
 
-	return link, nil
-}
-
-func (d Database) Has(ctx context.Context, code string) (bool, error) {
-	rows, err := d.db.QueryContext(ctx, "SELECT code FROM links WHERE code = ?", code)
-	if err != nil {
-		return false, err
-	}
-
-	return rows.Next(), rows.Err()
+	return link, true, nil
 }
 
 type dbLink struct {
