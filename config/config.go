@@ -3,7 +3,7 @@ package config
 import (
 	"embed"
 
-	"github.com/dbut2/shortener-web/internal/web"
+	"github.com/dbut2/shortener/internal/web"
 	"gopkg.in/yaml.v3"
 )
 

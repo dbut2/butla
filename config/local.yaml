@@ -1,6 +1,7 @@
 web:
   address: ":80"
-  api:
-    address: "localhost:8080"
-    insecure: true
   shortHost: "localhost"
+  database:
+    gsmResourceID: projects/540755457828/secrets/database-config/versions/latest
+  redis:
+    gsmResourceID: projects/540755457828/secrets/redis-config/versions/latest

@@ -1,12 +1,13 @@
 package web
 
-type Config struct {
-	Address   string `yaml:"address"`
-	Api       Api    `yaml:"api"`
-	ShortHost string `yaml:"shortHost"`
-}
+import (
+	"github.com/dbut2/shortener/pkg/database"
+	"github.com/dbut2/shortener/pkg/redis"
+)
 
-type Api struct {
-	Host     string `yaml:"address"`
-	Insecure bool   `yaml:"insecure"`
+type Config struct {
+	Address   string          `yaml:"address"`
+	ShortHost string          `yaml:"shortHost"`
+	Database  database.Config `yaml:"database"`
+	Redis     redis.Config    `yaml:"redis"`
 }
