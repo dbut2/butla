@@ -12,15 +12,9 @@ type Store interface {
 	Has(ctx context.Context, code string) (bool, error)
 }
 
-type Cache interface {
-	Set(ctx context.Context, link models.Link)
-	Get(ctx context.Context, code string) models.Link
-	Has(ctx context.Context, code string) bool
-}
-
 type CacheStore struct {
 	Primary Store
-	Cache   Cache
+	Cache   Store
 }
 
 func (c CacheStore) Set(ctx context.Context, link models.Link) error {
@@ -33,8 +27,9 @@ func (c CacheStore) Set(ctx context.Context, link models.Link) error {
 }
 
 func (c CacheStore) Get(ctx context.Context, code string) (models.Link, error) {
-	if c.Cache.Has(ctx, code) {
-		return c.Cache.Get(ctx, code), nil
+	link, _ := c.Cache.Get(ctx, code)
+	if link.Url != "" {
+		return link, nil
 	}
 	link, err := c.Primary.Get(ctx, code)
 	if err != nil {
@@ -45,8 +40,5 @@ func (c CacheStore) Get(ctx context.Context, code string) (models.Link, error) {
 }
 
 func (c CacheStore) Has(ctx context.Context, code string) (bool, error) {
-	if c.Cache.Has(ctx, code) {
-		return true, nil
-	}
 	return c.Primary.Has(ctx, code)
 }

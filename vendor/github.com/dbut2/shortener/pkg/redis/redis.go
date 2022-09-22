@@ -31,20 +31,20 @@ func NewRedis(config Config) (*Redis, error) {
 	})}, nil
 }
 
-func (r Redis) Set(ctx context.Context, link models.Link) {
+func (r Redis) Set(ctx context.Context, link models.Link) error {
 	expiry := time.Hour * 24 * 7
 	if link.Expiry.Valid {
 		expiry = time.Until(link.Expiry.Value)
 	}
-	r.client.Set(ctx, link.Code, link, expiry)
+	return r.client.Set(ctx, link.Code, link, expiry).Err()
 }
 
-func (r Redis) Get(ctx context.Context, code string) models.Link {
+func (r Redis) Get(ctx context.Context, code string) (models.Link, error) {
 	var link models.Link
-	_ = r.client.Get(ctx, code).Scan(&link)
-	return link
+	err := r.client.Get(ctx, code).Scan(&link)
+	return link, err
 }
 
-func (r Redis) Has(ctx context.Context, code string) bool {
-	return r.client.Exists(ctx, code).Val() > 0
+func (r Redis) Has(ctx context.Context, code string) (bool, error) {
+	return r.client.Exists(ctx, code).Val() > 0, nil
 }

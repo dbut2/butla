@@ -24,47 +24,34 @@ type Server struct {
 	store     store.Store
 }
 
-type CacheLog struct {
-	cache store.Cache
+func LogStore(store store.Store, name string) store.Store {
+	return logStore{
+		name:  name,
+		store: store,
+	}
 }
 
-func (c CacheLog) Set(ctx context.Context, link models.Link) {
-	log.Print("cache: set")
-	c.cache.Set(ctx, link)
-	log.Print("cache: setted")
-}
-
-func (c CacheLog) Get(ctx context.Context, code string) models.Link {
-	log.Print("cache: get")
-	link := c.cache.Get(ctx, code)
-	log.Print("cache: getted")
-	return link
-}
-
-func (c CacheLog) Has(ctx context.Context, code string) bool {
-	log.Print("cache: has")
-	has := c.cache.Has(ctx, code)
-	log.Print("cache: hassed")
-	return has
-}
-
-type StoreLog struct {
+type logStore struct {
+	name  string
 	store store.Store
 }
 
-func (s StoreLog) Set(ctx context.Context, link models.Link) error {
-	log.Print("store: set")
-	return s.store.Set(ctx, link)
+func (l logStore) Set(ctx context.Context, link models.Link) error {
+	log.Printf("%s: set", l.name)
+	defer log.Printf("%s: setted", l.name)
+	return l.store.Set(ctx, link)
 }
 
-func (s StoreLog) Get(ctx context.Context, code string) (models.Link, error) {
-	log.Print("store: get")
-	return s.store.Get(ctx, code)
+func (l logStore) Get(ctx context.Context, code string) (models.Link, error) {
+	log.Printf("%s: get", l.name)
+	defer log.Printf("%s: getted", l.name)
+	return l.store.Get(ctx, code)
 }
 
-func (s StoreLog) Has(ctx context.Context, code string) (bool, error) {
-	log.Print("store: has")
-	return s.store.Has(ctx, code)
+func (l logStore) Has(ctx context.Context, code string) (bool, error) {
+	log.Printf("%s: has", l.name)
+	defer log.Printf("%s: hassed", l.name)
+	return l.store.Has(ctx, code)
 }
 
 func New(config Config) (*Server, error) {
@@ -79,14 +66,14 @@ func New(config Config) (*Server, error) {
 	}
 
 	s := store.CacheStore{
-		Primary: StoreLog{db},
-		Cache:   CacheLog{r},
+		Primary: LogStore(db, "primary"),
+		Cache:   LogStore(r, "cache"),
 	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		store:     s,
+		store:     LogStore(s, "main"),
 	}, nil
 }
 
