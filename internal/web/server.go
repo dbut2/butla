@@ -14,9 +14,9 @@ import (
 )
 
 type Server struct {
-	address   string
-	shortHost string
-	shortener shortener.Shortener
+	Address   string
+	ShortHost string
+	Shortener shortener.Shortener
 }
 
 func New(config Config) (*Server, error) {
@@ -36,15 +36,13 @@ func New(config Config) (*Server, error) {
 	}
 
 	return &Server{
-		address:   config.Address,
-		shortHost: config.ShortHost,
-		shortener: shortener.New(store.Log(s, "main")),
+		Address:   config.Address,
+		ShortHost: config.ShortHost,
+		Shortener: shortener.New(store.Log(s, "main")),
 	}, nil
 }
 
-func (s *Server) Run() error {
-	r := gin.Default()
-
+func (s *Server) AttachTo(r gin.IRouter) {
 	r.GET("/shorten", func(c *gin.Context) {
 		c.Data(http.StatusOK, "text/html", index)
 	})
@@ -67,7 +65,7 @@ func (s *Server) Run() error {
 			return
 		}
 
-		link, err := s.shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
+		link, err := s.Shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			switch err {
 			case shortener.ErrAlreadyExists:
@@ -81,14 +79,14 @@ func (s *Server) Run() error {
 		c.JSON(http.StatusOK, struct {
 			Link string `json:"link"`
 		}{
-			Link: fmt.Sprintf("%s/%s", s.shortHost, link.Code),
+			Link: fmt.Sprintf("%s/%s", s.ShortHost, link.Code),
 		})
 	})
 
 	r.GET("/", func(c *gin.Context) {
 		code := "default"
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+		link, err := s.Shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			_ = c.Error(err)
 			switch err {
@@ -106,7 +104,7 @@ func (s *Server) Run() error {
 	r.GET("/:code", func(c *gin.Context) {
 		code := c.Param("code")
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+		link, err := s.Shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			_ = c.Error(err)
 			switch err {
@@ -120,6 +118,4 @@ func (s *Server) Run() error {
 
 		c.Redirect(http.StatusMovedPermanently, link.Url)
 	})
-
-	return r.Run(s.address)
 }

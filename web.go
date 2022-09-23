@@ -5,6 +5,7 @@ import (
 
 	"github.com/dbut2/shortener/config"
 	"github.com/dbut2/shortener/internal/web"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -28,7 +29,10 @@ func main() {
 		panic(err.Error())
 	}
 
-	err = server.Run()
+	r := gin.Default()
+	server.AttachTo(r)
+
+	err = r.Run(c.Web.Address)
 	if err != nil {
 		panic(err.Error())
 	}
