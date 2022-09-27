@@ -23,7 +23,7 @@ type Redis struct {
 var _ store.Store = new(Redis)
 
 func NewRedis(config Config) (*Redis, error) {
-	err := envs.LoadEnv(config)
+	err := envs.LoadEnv(&config)
 	if err != nil {
 		return nil, err
 	}

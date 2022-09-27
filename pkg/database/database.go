@@ -29,7 +29,7 @@ type Database struct {
 var _ store.Store = new(Database)
 
 func NewDatabase(c Config) (*Database, error) {
-	err := envs.LoadEnv(c)
+	err := envs.LoadEnv(&c)
 	if err != nil {
 		return nil, err
 	}
