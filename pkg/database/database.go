@@ -7,18 +7,18 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/dbut2/shortener/pkg/envs"
 	"github.com/dbut2/shortener/pkg/models"
-	"github.com/dbut2/shortener/pkg/secrets"
 	"github.com/dbut2/shortener/pkg/store"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type Config struct {
-	secrets.GsmResourceID `yaml:"gsmResourceID"`
-	Hostname              string `yaml:"hostname"`
-	Username              string `yaml:"username"`
-	Password              string `yaml:"password"`
-	Database              string `yaml:"database"`
+	envs.Env `yaml:"env"`
+	Hostname string `yaml:"hostname"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Database string `yaml:"database"`
 }
 
 type Database struct {
@@ -29,7 +29,7 @@ type Database struct {
 var _ store.Store = new(Database)
 
 func NewDatabase(c Config) (*Database, error) {
-	err := secrets.LoadSecret(&c)
+	err := envs.LoadEnv(c)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (d *Database) openConn(connStr string) {
 	if err != nil {
 		panic(err.Error())
 	}
-	
+
 	d.db = conn
 
 	d.wg.Done()
