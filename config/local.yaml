@@ -1,7 +1,9 @@
 web:
-  address: ":80"
-  shortHost: "localhost"
+  address: ":8080"
+  shortHost: "localhost:8080"
   database:
-    gsmResourceID: projects/540755457828/secrets/database-config/versions/latest
+    hostname: "mysql:3306"
+    database: "shortener"
+    username: "root"
   redis:
-    gsmResourceID: projects/540755457828/secrets/redis-config/versions/latest
+    host: "redis:6379"
