@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/secrets"
@@ -21,6 +22,7 @@ type Config struct {
 }
 
 type Database struct {
+	wg sync.WaitGroup
 	db *sql.DB
 }
 
@@ -32,18 +34,29 @@ func NewDatabase(c Config) (*Database, error) {
 		return nil, err
 	}
 
-	connStr := fmt.Sprintf("%s:%s@(%s)/%s?parseTime=true", c.Username, c.Password, c.Hostname, c.Database)
-	db, err := sql.Open("mysql", connStr)
-	if err != nil {
-		return nil, err
-	}
+	db := &Database{}
 
-	return &Database{
-		db: db,
-	}, nil
+	connStr := fmt.Sprintf("%s:%s@(%s)/%s?parseTime=true", c.Username, c.Password, c.Hostname, c.Database)
+	db.wg.Add(1)
+	go db.openConn(connStr)
+
+	return db, nil
 }
 
-func (d Database) Set(ctx context.Context, link models.Link) error {
+func (d *Database) openConn(connStr string) {
+	conn, err := sql.Open("mysql", connStr)
+	if err != nil {
+		panic(err.Error())
+	}
+	
+	d.db = conn
+
+	d.wg.Done()
+}
+
+func (d *Database) Set(ctx context.Context, link models.Link) error {
+	d.wg.Wait()
+
 	stmt, err := d.db.PrepareContext(ctx, "INSERT INTO links (code, url, expiry, ip) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
@@ -79,7 +92,9 @@ func (d Database) Set(ctx context.Context, link models.Link) error {
 	return nil
 }
 
-func (d Database) Get(ctx context.Context, code string) (models.Link, bool, error) {
+func (d *Database) Get(ctx context.Context, code string) (models.Link, bool, error) {
+	d.wg.Wait()
+
 	rows, err := d.db.QueryContext(ctx, "SELECT code, url, expiry, ip FROM links WHERE code = ?", code)
 	if err != nil {
 		return models.Link{}, false, err
