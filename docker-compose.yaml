@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: "mysql"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      - "./pkg/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+  redis:
+    image: "redis:alpine"
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "mysql"
+      - "redis"
