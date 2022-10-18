@@ -31,18 +31,20 @@ func New(config Config) (*Server, error) {
 	}
 
 	s := store.CacheStore{
-		Primary: store.Log(db, "primary"),
-		Cache:   store.Log(r, "cache"),
+		Primary: db,
+		Cache:   r,
 	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		shortener: shortener.New(store.Log(s, "main")),
+		shortener: shortener.New(s),
 	}, nil
 }
 
 func (s *Server) Run() error {
+	gin.SetMode(gin.ReleaseMode)
+	
 	r := gin.Default()
 
 	r.GET("/shorten", func(c *gin.Context) {
