@@ -2,6 +2,6 @@ web:
   address: ":80"
   shortHost: "test.but.la"
   database:
-    gsmResourceID: projects/540755457828/secrets/database-config/versions/latest
+    env: DATABASE
   redis:
-    gsmResourceID: projects/540755457828/secrets/redis-config/versions/latest
+    env: REDIS

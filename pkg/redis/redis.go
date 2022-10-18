@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
+	"github.com/dbut2/shortener/pkg/envs"
 	"github.com/dbut2/shortener/pkg/models"
-	"github.com/dbut2/shortener/pkg/secrets"
 	"github.com/dbut2/shortener/pkg/store"
 	"github.com/go-redis/redis/v8"
 )
 
 type Config struct {
-	secrets.GsmResourceID `yaml:"gsmResourceID"`
-	Host                  string `yaml:"host"`
-	Password              string `yaml:"password"`
+	envs.Env `yaml:"env"`
+	Host     string `yaml:"host"`
+	Password string `yaml:"password"`
 }
 
 type Redis struct {
@@ -23,7 +23,7 @@ type Redis struct {
 var _ store.Store = new(Redis)
 
 func NewRedis(config Config) (*Redis, error) {
-	err := secrets.LoadSecret(&config)
+	err := envs.LoadEnv(&config)
 	if err != nil {
 		return nil, err
 	}
