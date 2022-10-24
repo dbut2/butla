@@ -1,7 +1,5 @@
 web:
   address: ":80"
   shortHost: "dev.but.la"
-  database:
-    env: DATABASE
-  redis:
-    env: REDIS
+  datastore:
+    env: DATASTORE
