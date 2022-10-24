@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"context"
+	"sync"
 
 	"cloud.google.com/go/datastore"
 	"github.com/dbut2/shortener/pkg/envs"
@@ -17,6 +18,7 @@ type Config struct {
 
 type Datastore struct {
 	client *datastore.Client
+	wg     sync.WaitGroup
 }
 
 var _ store.Store = new(Datastore)
@@ -28,20 +30,28 @@ func NewDatastore(c Config) (*Datastore, error) {
 	}
 
 	d := &Datastore{}
-	client, err := datastore.NewClient(context.Background(), c.Project)
-	if err != nil {
-		return nil, err
-	}
-	d.client = client
+
+	d.wg.Add(1)
+	go func() {
+		client, err := datastore.NewClient(context.Background(), c.Project)
+		if err != nil {
+			panic(err.Error())
+		}
+		d.client = client
+		d.wg.Done()
+	}()
+
 	return d, nil
 }
 
 func (d *Datastore) Set(ctx context.Context, link models.Link) error {
+	d.wg.Wait()
 	_, err := d.client.Put(ctx, datastore.NameKey("link", link.Code, nil), &link)
 	return err
 }
 
 func (d *Datastore) Get(ctx context.Context, code string) (models.Link, bool, error) {
+	d.wg.Wait()
 	link := models.Link{}
 	err := d.client.Get(ctx, datastore.NameKey("link", code, nil), &link)
 	if err == datastore.ErrNoSuchEntity {
