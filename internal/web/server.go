@@ -5,12 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dbut2/shortener/pkg/datastore"
 	"github.com/gin-gonic/gin"
 
-	"github.com/dbut2/shortener/pkg/database"
-	"github.com/dbut2/shortener/pkg/redis"
 	"github.com/dbut2/shortener/pkg/shortener"
-	"github.com/dbut2/shortener/pkg/store"
 )
 
 type Server struct {
@@ -20,31 +18,21 @@ type Server struct {
 }
 
 func New(config Config) (*Server, error) {
-	db, err := database.NewDatabase(config.Database)
+	ds, err := datastore.NewDatastore(config.Datastore)
 	if err != nil {
 		return nil, err
-	}
-
-	r, err := redis.NewRedis(config.Redis)
-	if err != nil {
-		return nil, err
-	}
-
-	s := store.CacheStore{
-		Primary: db,
-		Cache:   r,
 	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		shortener: shortener.New(s),
+		shortener: shortener.New(ds),
 	}, nil
 }
 
 func (s *Server) Run() error {
 	gin.SetMode(gin.ReleaseMode)
-	
+
 	r := gin.Default()
 
 	r.GET("/shorten", func(c *gin.Context) {
