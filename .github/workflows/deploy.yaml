@@ -39,6 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: test
+      SECRETS: |
+        DATABASE=database-config:latest
+        DATASTORE=datastore-config:latest
+        REDIS=redis-config:latest
     environment:
       name: test
       url: https://test.but.la/shorten
@@ -59,6 +63,7 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
+          secrets: ${{ env.SECRETS }}
           service: web-test
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
@@ -67,6 +72,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: dev
+      SECRETS: |
+        DATABASE=database-config:latest
+        DATASTORE=datastore-config:latest
+        REDIS=redis-config:latest
     environment:
       name: dev
       url: https://dev.but.la/shorten
@@ -87,6 +96,7 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
+          secrets: ${{ env.SECRETS }}
           service: web-dev
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
@@ -95,6 +105,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: prod
+      SECRETS: |
+        DATABASE=database-config:latest
+        DATASTORE=datastore-config:latest
+        REDIS=redis-config:latest
     environment:
       name: prod
       url: https://but.la/shorten
@@ -116,5 +130,6 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
+          secrets: ${{ env.SECRETS }}
           service: web-prod
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
