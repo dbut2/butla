@@ -7,7 +7,7 @@
           "source": "**",
           "run": {
             "serviceId": "web-prod",
-            "region": "australia-southeast2"
+            "region": "australia-southeast1"
           }
         }
       ]
@@ -19,7 +19,7 @@
           "source": "**",
           "run": {
             "serviceId": "web-dev",
-            "region": "australia-southeast2"
+            "region": "australia-southeast1"
           }
         }
       ]
@@ -31,7 +31,7 @@
           "source": "**",
           "run": {
             "serviceId": "web-test",
-            "region": "australia-southeast2"
+            "region": "australia-southeast1"
           }
         }
       ]

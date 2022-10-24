@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: asia.gcr.io/but-la/web
   PROJECT_ID: but-la
-  REGION: australia-southeast2
+  REGION: australia-southeast1
 
 jobs:
   build:
