@@ -2,7 +2,7 @@ name: Deploy
 on:
   push:
     branches:
-      - 'main'
+      - 'main
   workflow_dispatch:
 
 env:
@@ -68,7 +68,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-dev:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main
     runs-on: ubuntu-latest
     env:
       ENV: dev
@@ -101,7 +101,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-prod:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main
     runs-on: ubuntu-latest
     env:
       ENV: prod
