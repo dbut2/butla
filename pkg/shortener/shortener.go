@@ -9,6 +9,7 @@ import (
 
 	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/store"
+	"go.opencensus.io/trace"
 )
 
 type Shortener interface {
@@ -53,6 +54,8 @@ func New(store store.Store) Shortener {
 }
 
 func (d shortener) Shorten(ctx context.Context, url string, metadata ...Metadata) (models.Link, error) {
+	ctx, span := trace.StartSpan(ctx, "shorten.Shorten")
+	defer span.End()
 	var code string
 	for {
 		code = randomCode(6)
@@ -84,6 +87,8 @@ func randomCode(length int) string {
 }
 
 func (d shortener) ShortenCode(ctx context.Context, url string, code string, metadata ...Metadata) (models.Link, error) {
+	ctx, span := trace.StartSpan(ctx, "shorten.ShortenCode")
+	defer span.End()
 	md := md{}
 	for _, m := range metadata {
 		md = m(md)
@@ -118,6 +123,8 @@ func (d shortener) ShortenCode(ctx context.Context, url string, code string, met
 }
 
 func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metadata) (models.Link, error) {
+	ctx, span := trace.StartSpan(ctx, "shorten.Length")
+	defer span.End()
 	md := md{}
 	for _, m := range metadata {
 		md = m(md)
