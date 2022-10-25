@@ -5,9 +5,10 @@ import (
 	"os"
 
 	"contrib.go.opencensus.io/exporter/stackdriver"
+	"go.opencensus.io/trace"
+
 	"github.com/dbut2/shortener/config"
 	"github.com/dbut2/shortener/internal/web"
-	"go.opencensus.io/trace"
 )
 
 func main() {

@@ -9,7 +9,6 @@ import (
 	"go.opencensus.io/trace"
 
 	"github.com/dbut2/shortener/pkg/datastore"
-
 	"github.com/dbut2/shortener/pkg/shortener"
 )
 
