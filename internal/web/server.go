@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dbut2/shortener/pkg/datastore"
+	"github.com/dbut2/shortener/pkg/middleware"
 	"github.com/gin-gonic/gin"
 
 	"github.com/dbut2/shortener/pkg/shortener"
@@ -34,6 +35,8 @@ func (s *Server) Run() error {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
+
+	r.Use(middleware.Tracer())
 
 	r.GET("/shorten", func(c *gin.Context) {
 		c.Data(http.StatusOK, "text/html", index)
