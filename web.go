@@ -11,13 +11,7 @@ import (
 )
 
 func main() {
-	exporter, err := stackdriver.NewExporter(stackdriver.Options{
-		ProjectID: os.Getenv("GOOGLE_CLOUD_PROJECT"),
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	trace.RegisterExporter(exporter)
+	err := startStackdriver()
 
 	env := os.Getenv("ENV")
 	if env == "" {
@@ -26,7 +20,7 @@ func main() {
 
 	c, err := config.LoadConfig(env)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	port := os.Getenv("PORT")
@@ -36,11 +30,25 @@ func main() {
 
 	server, err := web.New(c.Web)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	err = server.Run()
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
+}
+
+func startStackdriver() error {
+	project := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	if project == "" {
+		return nil
+	}
+	exporter, err := stackdriver.NewExporter(stackdriver.Options{ProjectID: project})
+	if err != nil {
+		return err
+	}
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	trace.RegisterExporter(exporter)
+	return nil
 }
