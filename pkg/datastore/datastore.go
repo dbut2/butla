@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/dbut2/shortener/pkg/envs"
+	"go.opencensus.io/trace"
 
 	"github.com/dbut2/shortener/pkg/models"
 	"github.com/dbut2/shortener/pkg/store"
@@ -45,12 +46,16 @@ func NewDatastore(c Config) (*Datastore, error) {
 }
 
 func (d *Datastore) Set(ctx context.Context, link models.Link) error {
+	ctx, span := trace.StartSpan(ctx, "datastore.Set")
+	defer span.End()
 	d.wg.Wait()
 	_, err := d.client.Put(ctx, datastore.NameKey("link", link.Code, nil), &link)
 	return err
 }
 
 func (d *Datastore) Get(ctx context.Context, code string) (models.Link, bool, error) {
+	ctx, span := trace.StartSpan(ctx, "datastore.Get")
+	defer span.End()
 	d.wg.Wait()
 	link := models.Link{}
 	err := d.client.Get(ctx, datastore.NameKey("link", code, nil), &link)

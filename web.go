@@ -1,13 +1,19 @@
 package main
 
 import (
+	"log"
 	"os"
+
+	"contrib.go.opencensus.io/exporter/stackdriver"
+	"go.opencensus.io/trace"
 
 	"github.com/dbut2/shortener/config"
 	"github.com/dbut2/shortener/internal/web"
 )
 
 func main() {
+	err := startStackdriver()
+
 	env := os.Getenv("ENV")
 	if env == "" {
 		env = "local"
@@ -15,7 +21,7 @@ func main() {
 
 	c, err := config.LoadConfig(env)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	port := os.Getenv("PORT")
@@ -25,11 +31,25 @@ func main() {
 
 	server, err := web.New(c.Web)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	err = server.Run()
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
+}
+
+func startStackdriver() error {
+	project := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	if project == "" {
+		return nil
+	}
+	exporter, err := stackdriver.NewExporter(stackdriver.Options{ProjectID: project})
+	if err != nil {
+		return err
+	}
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	trace.RegisterExporter(exporter)
+	return nil
 }

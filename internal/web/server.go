@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dbut2/shortener/pkg/datastore"
 	"github.com/gin-gonic/gin"
+	"go.opencensus.io/trace"
 
+	"github.com/dbut2/shortener/pkg/datastore"
 	"github.com/dbut2/shortener/pkg/shortener"
 )
 
@@ -36,18 +37,26 @@ func (s *Server) Run() error {
 	r := gin.Default()
 
 	r.GET("/shorten", func(c *gin.Context) {
+		_, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		c.Data(http.StatusOK, "text/html", index)
 	})
 
 	r.GET("/404", func(c *gin.Context) {
+		_, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		c.Data(http.StatusNotFound, "text/html", e404)
 	})
 
 	r.GET("/500", func(c *gin.Context) {
+		_, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		c.Data(http.StatusInternalServerError, "text/html", e500)
 	})
 
 	r.POST("/shorten", func(c *gin.Context) {
+		ctx, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		b := struct {
 			Url string `json:"url"`
 		}{}
@@ -57,7 +66,7 @@ func (s *Server) Run() error {
 			return
 		}
 
-		link, err := s.shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
+		link, err := s.shortener.Shorten(ctx, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			switch err {
 			case shortener.ErrAlreadyExists:
@@ -76,9 +85,11 @@ func (s *Server) Run() error {
 	})
 
 	r.GET("/", func(c *gin.Context) {
+		ctx, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		code := "default"
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+		link, err := s.shortener.Lengthen(ctx, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			_ = c.Error(err)
 			switch err {
@@ -94,9 +105,11 @@ func (s *Server) Run() error {
 	})
 
 	r.GET("/:code", func(c *gin.Context) {
+		ctx, span := trace.StartSpan(c, c.Request.Method+c.FullPath())
+		defer span.End()
 		code := c.Param("code")
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+		link, err := s.shortener.Lengthen(ctx, code, shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			_ = c.Error(err)
 			switch err {
