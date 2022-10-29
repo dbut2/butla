@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/dbut2/shortener/pkg/models"
-	"github.com/dbut2/shortener/pkg/store"
+	"github.com/dbut2/shortener-web/pkg/models"
+	"github.com/dbut2/shortener-web/pkg/store"
 )
 
 type Shortener interface {

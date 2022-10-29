@@ -5,10 +5,10 @@ import (
 	"sync"
 
 	"cloud.google.com/go/datastore"
-	"github.com/dbut2/shortener/pkg/envs"
+	"github.com/dbut2/shortener-web/pkg/envs"
 
-	"github.com/dbut2/shortener/pkg/models"
-	"github.com/dbut2/shortener/pkg/store"
+	"github.com/dbut2/shortener-web/pkg/models"
+	"github.com/dbut2/shortener-web/pkg/store"
 )
 
 type Config struct {

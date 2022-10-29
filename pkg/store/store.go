@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/dbut2/shortener/pkg/models"
+	"github.com/dbut2/shortener-web/pkg/models"
 )
 
 type Store interface {

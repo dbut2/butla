@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/dbut2/shortener/config"
-	"github.com/dbut2/shortener/internal/web"
+	"github.com/dbut2/shortener-web/config"
+	"github.com/dbut2/shortener-web/internal/web"
 )
 
 func main() {
