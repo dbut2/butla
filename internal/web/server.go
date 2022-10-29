@@ -2,13 +2,16 @@ package web
 
 import (
 	"fmt"
+	"github.com/dbut2/shortener-web/pkg/database"
+	"github.com/dbut2/shortener-web/pkg/redis"
 	"net/http"
 	"time"
 
-	"github.com/dbut2/shortener-web/pkg/datastore"
 	"github.com/gin-gonic/gin"
 
+	"github.com/dbut2/shortener-web/pkg/datastore"
 	"github.com/dbut2/shortener-web/pkg/shortener"
+	"github.com/dbut2/shortener-web/pkg/store"
 )
 
 type Server struct {
@@ -18,15 +21,43 @@ type Server struct {
 }
 
 func New(config Config) (*Server, error) {
-	ds, err := datastore.NewDatastore(config.Datastore)
-	if err != nil {
-		return nil, err
+	var s store.Store
+
+	if config.Store.Database != nil {
+		db, err := database.NewDatabase(*config.Store.Database)
+		if err != nil {
+			return nil, err
+		}
+		s = db
+	}
+
+	if config.Store.Datastore != nil {
+		ds, err := datastore.NewDatastore(*config.Store.Datastore)
+		if err != nil {
+			return nil, err
+		}
+		s = ds
+	}
+
+	if s == nil {
+		s = store.InMem()
+	}
+
+	if config.Cache.Redis != nil {
+		r, err := redis.NewRedis(*config.Cache.Redis)
+		if err != nil {
+			return nil, err
+		}
+		s = store.CacheStore{
+			Primary: s,
+			Cache:   r,
+		}
 	}
 
 	return &Server{
 		address:   config.Address,
 		shortHost: config.ShortHost,
-		shortener: shortener.New(ds),
+		shortener: shortener.New(s),
 	}, nil
 }
 

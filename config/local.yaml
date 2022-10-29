@@ -1,9 +1,11 @@
 web:
   address: ":8080"
   shortHost: "localhost:8080"
-  database:
-    hostname: "mysql:3306"
-    database: "shortener"
-    username: "root"
-  redis:
-    host: "redis:6379"
+  store:
+    database:
+      hostname: "mysql:3306"
+      database: "shortener"
+      username: "root"
+  cache:
+    redis:
+      host: "redis:6379"

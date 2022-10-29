@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"log"
+	"sync"
 
 	"github.com/dbut2/shortener-web/pkg/models"
 )
@@ -38,6 +39,31 @@ func (c CacheStore) Get(ctx context.Context, code string) (models.Link, bool, er
 	if has {
 		_ = c.Cache.Set(ctx, link)
 	}
+	return link, has, nil
+}
+
+type inMem struct {
+	links map[string]models.Link
+	sync.Mutex
+}
+
+func InMem() Store {
+	return &inMem{
+		links: make(map[string]models.Link),
+	}
+}
+
+func (i *inMem) Set(ctx context.Context, link models.Link) error {
+	i.Lock()
+	i.links[link.Code] = link
+	i.Unlock()
+	return nil
+}
+
+func (i *inMem) Get(ctx context.Context, code string) (models.Link, bool, error) {
+	i.Lock()
+	link, has := i.links[code]
+	i.Unlock()
 	return link, has, nil
 }
 

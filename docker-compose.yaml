@@ -9,6 +9,8 @@ services:
     image: "redis:alpine"
   web:
     build: .
+    environment:
+      ENV: "local"
     ports:
       - "8080:8080"
     depends_on:
