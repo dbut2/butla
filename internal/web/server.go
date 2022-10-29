@@ -39,6 +39,10 @@ func New(config Config) (*Server, error) {
 		s = ds
 	}
 
+	if s == nil {
+		s = store.InMem()
+	}
+
 	if config.Cache.Redis != nil {
 		r, err := redis.NewRedis(*config.Cache.Redis)
 		if err != nil {

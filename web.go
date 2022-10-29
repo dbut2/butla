@@ -10,7 +10,7 @@ import (
 func main() {
 	env := os.Getenv("ENV")
 	if env == "" {
-		env = "local"
+		env = "default"
 	}
 
 	c, err := config.LoadConfig(env)
