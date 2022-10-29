@@ -1,5 +1,6 @@
 web:
   address: ":80"
   shortHost: "but.la"
-  datastore:
-    env: DATASTORE
+  store:
+    datastore:
+      env: DATASTORE

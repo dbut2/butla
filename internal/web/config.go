@@ -7,9 +7,17 @@ import (
 )
 
 type Config struct {
-	Address   string           `yaml:"address"`
-	ShortHost string           `yaml:"shortHost"`
-	Database  database.Config  `yaml:"database"`
-	Datastore datastore.Config `yaml:"datastore"`
-	Redis     redis.Config     `yaml:"redis"`
+	Address   string `yaml:"address"`
+	ShortHost string `yaml:"shortHost"`
+	Store     Store  `yaml:"store"`
+	Cache     Cache  `yaml:"cache"`
+}
+
+type Store struct {
+	Database  *database.Config  `yaml:"database"`
+	Datastore *datastore.Config `yaml:"datastore"`
+}
+
+type Cache struct {
+	Redis *redis.Config `yaml:"redis"`
 }
