@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dbut2/shortener/pkg/datastore"
+	"github.com/dbut2/shortener-web/pkg/datastore"
 	"github.com/gin-gonic/gin"
 
-	"github.com/dbut2/shortener/pkg/shortener"
+	"github.com/dbut2/shortener-web/pkg/shortener"
 )
 
 type Server struct {

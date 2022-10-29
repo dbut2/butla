@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/dbut2/shortener/pkg/envs"
-	"github.com/dbut2/shortener/pkg/models"
-	"github.com/dbut2/shortener/pkg/store"
+	"github.com/dbut2/shortener-web/pkg/envs"
+	"github.com/dbut2/shortener-web/pkg/models"
+	"github.com/dbut2/shortener-web/pkg/store"
 	_ "github.com/go-sql-driver/mysql"
 )
 
