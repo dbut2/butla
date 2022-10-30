@@ -4,6 +4,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var skipLoading bool = false
+
+func SkipLoading() {
+	skipLoading = true
+}
+
 type Loader[T any] struct {
 	C      T       `yaml:",inline"`
 	Env    *Env    `yaml:"env"`
@@ -19,6 +25,10 @@ func (l *Loader[T]) UnmarshalYAML(value *yaml.Node) error {
 		return err
 	}
 	*l = Loader[T](tmp)
+
+	if skipLoading {
+		return nil
+	}
 
 	var loaders []loader
 	if l.Env != nil {
