@@ -7,10 +7,15 @@ import (
 )
 
 type Config struct {
-	Address   string `yaml:"address"`
-	ShortHost string `yaml:"shortHost"`
-	Store     Store  `yaml:"store"`
-	Cache     Cache  `yaml:"cache"`
+	Address   string    `yaml:"address"`
+	ShortHost ShortHost `yaml:"shortHost"`
+	Store     Store     `yaml:"store"`
+	Cache     Cache     `yaml:"cache"`
+}
+
+type ShortHost struct {
+	Schema string `yaml:"schema" json:"schema" `
+	URL    string `yaml:"host"`
 }
 
 type Store struct {

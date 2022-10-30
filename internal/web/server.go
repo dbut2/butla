@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/dbut2/shortener-web/pkg/database"
 	"github.com/dbut2/shortener-web/pkg/redis"
+	"html/template"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +18,8 @@ import (
 
 type Server struct {
 	address   string
-	shortHost string
+	schema    string
+	host      string
 	shortener shortener.Shortener
 }
 
@@ -54,9 +57,14 @@ func New(config Config) (*Server, error) {
 		}
 	}
 
+	if config.ShortHost.Schema == "" {
+		config.ShortHost.Schema = "https"
+	}
+
 	return &Server{
 		address:   config.Address,
-		shortHost: config.ShortHost,
+		schema:    config.ShortHost.Schema,
+		host:      config.ShortHost.URL,
 		shortener: shortener.New(s),
 	}, nil
 }
@@ -65,17 +73,24 @@ func (s *Server) Run() error {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
+	t, err := template.ParseFS(pages, "*")
+	if err != nil {
+		return err
+	}
+	r.SetHTMLTemplate(t)
 
 	r.GET("/shorten", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/html", index)
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"schema": s.schema,
+		})
 	})
 
 	r.GET("/404", func(c *gin.Context) {
-		c.Data(http.StatusNotFound, "text/html", e404)
+		c.HTML(http.StatusNotFound, "404.html", nil)
 	})
 
 	r.GET("/500", func(c *gin.Context) {
-		c.Data(http.StatusInternalServerError, "text/html", e500)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 	})
 
 	r.POST("/shorten", func(c *gin.Context) {
@@ -88,7 +103,17 @@ func (s *Server) Run() error {
 			return
 		}
 
-		link, err := s.shortener.Shorten(c, b.Url, shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
+		u, err := url.Parse(b.Url)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		if u.Scheme == "" {
+			u.Scheme = "https"
+		}
+
+		link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
 		if err != nil {
 			switch err {
 			case shortener.ErrAlreadyExists:
@@ -102,45 +127,37 @@ func (s *Server) Run() error {
 		c.JSON(http.StatusOK, struct {
 			Link string `json:"link"`
 		}{
-			Link: fmt.Sprintf("%s/%s", s.shortHost, link.Code),
+			Link: fmt.Sprintf("%s/%s", s.host, link.Code),
 		})
 	})
 
 	r.GET("/", func(c *gin.Context) {
 		code := "default"
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
-		if err != nil {
-			_ = c.Error(err)
-			switch err {
-			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
-				c.Data(http.StatusNotFound, "text/html", e404)
-			default:
-				c.Data(http.StatusNotFound, "text/html", e500)
-			}
-			return
-		}
-
-		c.Redirect(http.StatusMovedPermanently, link.Url)
+		s.lengthen(c, code)
 	})
 
 	r.GET("/:code", func(c *gin.Context) {
 		code := c.Param("code")
 
-		link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
-		if err != nil {
-			_ = c.Error(err)
-			switch err {
-			case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
-				c.Data(http.StatusNotFound, "text/html", e404)
-			default:
-				c.Data(http.StatusNotFound, "text/html", e500)
-			}
-			return
-		}
-
-		c.Redirect(http.StatusMovedPermanently, link.Url)
+		s.lengthen(c, code)
 	})
 
 	return r.Run(s.address)
+}
+
+func (s *Server) lengthen(c *gin.Context, code string) {
+	link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
+	if err != nil {
+		_ = c.Error(err)
+		switch err {
+		case shortener.ErrNotFound, shortener.ErrExpired, shortener.ErrInvalidIP:
+			c.HTML(http.StatusNotFound, "404.html", nil)
+		default:
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+		}
+		return
+	}
+
+	c.Redirect(http.StatusMovedPermanently, link.Url)
 }
