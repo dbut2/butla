@@ -128,7 +128,7 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 		return models.Link{}, ErrStore
 	}
 	if !has {
-		log.Print(err.Error())
+		log.Print(code)
 		return models.Link{}, ErrNotFound
 	}
 
