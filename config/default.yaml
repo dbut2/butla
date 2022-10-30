@@ -1,5 +1,8 @@
 web:
   address: ":8080"
-  shortHost:
+  host:
     scheme: "http"
-    host: "localhost:8080"
+    hostname: "localhost:8080"
+  store:
+    datastore:
+      secret: projects/540755457828/secrets/datastore-config/versions/latest

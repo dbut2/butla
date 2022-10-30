@@ -1,8 +1,8 @@
 web:
   address: ":80"
-  shortHost:
+  host:
     scheme: "https"
-    host: "test.but.la"
+    hostname: "test.but.la"
   store:
     datastore:
       env: DATASTORE

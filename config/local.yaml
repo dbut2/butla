@@ -1,8 +1,8 @@
 web:
   address: ":8080"
-  shortHost:
+  host:
     scheme: "http"
-    host: "localhost:8080"
+    hostname: "localhost:8080"
   store:
     database:
       hostname: "mysql:3306"

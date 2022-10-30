@@ -19,23 +19,23 @@ import (
 type Server struct {
 	address   string
 	scheme    string
-	host      string
+	hostname  string
 	shortener shortener.Shortener
 }
 
 func New(config Config) (*Server, error) {
 	var s store.Store
 
-	if config.Store.Database != nil {
-		db, err := database.NewDatabase(*config.Store.Database)
+	if config.Store.Database.C != nil {
+		db, err := database.NewDatabase(*config.Store.Database.C)
 		if err != nil {
 			return nil, err
 		}
 		s = db
 	}
 
-	if config.Store.Datastore != nil {
-		ds, err := datastore.NewDatastore(*config.Store.Datastore)
+	if config.Store.Datastore.C != nil {
+		ds, err := datastore.NewDatastore(*config.Store.Datastore.C)
 		if err != nil {
 			return nil, err
 		}
@@ -46,8 +46,8 @@ func New(config Config) (*Server, error) {
 		s = store.InMem()
 	}
 
-	if config.Cache.Redis != nil {
-		r, err := redis.NewRedis(*config.Cache.Redis)
+	if config.Cache.Redis.C != nil {
+		r, err := redis.NewRedis(*config.Cache.Redis.C)
 		if err != nil {
 			return nil, err
 		}
@@ -57,14 +57,14 @@ func New(config Config) (*Server, error) {
 		}
 	}
 
-	if config.ShortHost.Scheme == "" {
-		config.ShortHost.Scheme = "https"
+	if config.Host.Scheme == "" {
+		config.Host.Scheme = "https"
 	}
 
 	return &Server{
 		address:   config.Address,
-		scheme:    config.ShortHost.Scheme,
-		host:      config.ShortHost.URL,
+		scheme:    config.Host.Scheme,
+		hostname:  config.Host.Hostname,
 		shortener: shortener.New(s),
 	}, nil
 }
@@ -127,7 +127,7 @@ func (s *Server) Run() error {
 		c.JSON(http.StatusOK, struct {
 			Link string `json:"link"`
 		}{
-			Link: fmt.Sprintf("%s/%s", s.host, link.Code),
+			Link: fmt.Sprintf("%s/%s", s.hostname, link.Code),
 		})
 	})
 

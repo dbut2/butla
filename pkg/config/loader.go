@@ -1,29 +1,47 @@
 package config
 
-type Loader struct {
-	Env    *Env    `yaml:"Env"`
-	Secret *Secret `yaml:"gsmResourceID"`
+import (
+	"gopkg.in/yaml.v3"
+)
+
+type Loader[T any] struct {
+	C      T       `yaml:",inline"`
+	Env    *Env    `yaml:"env"`
+	Secret *Secret `yaml:"secret"`
 }
 
-var _ loader = new(Loader)
+type tempLoader[T any] Loader[T]
 
-func (l Loader) load(c any) error {
-	if l.Env != nil {
-		return l.Env.load(c)
+func (l *Loader[T]) UnmarshalYAML(value *yaml.Node) error {
+	loaders := []loader{l.Env, l.Secret}
+
+	var tmp tempLoader[T]
+	err := value.Decode(&tmp)
+	if err != nil {
+		return err
 	}
-	if l.Secret != nil {
-		return l.Secret.load(c)
-	}
-	return nil
+	*l = Loader[T](tmp)
+
+	return l.load(loaders...)
 }
 
 type loader interface {
-	load(c any) error
+	load() ([]byte, error)
 }
 
-func Load(l loader) error {
-	if l == nil {
-		return nil
+func (l *Loader[T]) load(loaders ...loader) error {
+	for _, lr := range loaders {
+		if lr == nil {
+			return nil
+		}
+		bytes, err := lr.load()
+		if err != nil {
+			return err
+		}
+		err = yaml.Unmarshal(bytes, &l.C)
+		if err != nil {
+			return err
+		}
 	}
-	return l.load(l)
+	return nil
 }

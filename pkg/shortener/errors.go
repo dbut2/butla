@@ -5,10 +5,10 @@ import (
 )
 
 var (
-	ErrUnspecified = errors.New("unspecified")
-	ErrStore = errors.New("store")
+	ErrUnspecified   = errors.New("unspecified")
+	ErrStore         = errors.New("store")
 	ErrAlreadyExists = errors.New("already exists")
-	ErrNotFound = errors.New("not found")
-	ErrExpired = errors.New("expired")
-	ErrInvalidIP = errors.New("invalid ip")
+	ErrNotFound      = errors.New("not found")
+	ErrExpired       = errors.New("expired")
+	ErrInvalidIP     = errors.New("invalid ip")
 )

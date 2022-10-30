@@ -9,17 +9,15 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/dbut2/shortener-web/pkg/config"
 	"github.com/dbut2/shortener-web/pkg/models"
 	"github.com/dbut2/shortener-web/pkg/store"
 )
 
 type Config struct {
-	config.Loader `yaml:",inline"`
-	Hostname      string `yaml:"hostname"`
-	Username      string `yaml:"username"`
-	Password      string `yaml:"password"`
-	Database      string `yaml:"database"`
+	Hostname string `yaml:"hostname"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Database string `yaml:"database"`
 }
 
 type Database struct {
@@ -30,11 +28,6 @@ type Database struct {
 var _ store.Store = new(Database)
 
 func NewDatabase(c Config) (*Database, error) {
-	err := config.Load(&c)
-	if err != nil {
-		return nil, err
-	}
-
 	db := &Database{}
 
 	connStr := fmt.Sprintf("%s:%s@(%s)/%s?parseTime=true", c.Username, c.Password, c.Hostname, c.Database)

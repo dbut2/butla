@@ -6,14 +6,12 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"github.com/dbut2/shortener-web/pkg/config"
 	"github.com/dbut2/shortener-web/pkg/models"
 	"github.com/dbut2/shortener-web/pkg/store"
 )
 
 type Config struct {
-	config.Loader `yaml:",inline"`
-	Project       string `yaml:"project"`
+	Project string `yaml:"project"`
 }
 
 type Datastore struct {
@@ -24,11 +22,6 @@ type Datastore struct {
 var _ store.Store = new(Datastore)
 
 func NewDatastore(c Config) (*Datastore, error) {
-	err := config.Load(&c)
-	if err != nil {
-		return nil, err
-	}
-
 	d := &Datastore{}
 
 	d.wg.Add(1)
