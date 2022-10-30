@@ -3,8 +3,9 @@ package config
 import (
 	"embed"
 
-	"github.com/dbut2/shortener-web/internal/web"
 	"gopkg.in/yaml.v3"
+
+	"github.com/dbut2/shortener-web/internal/web"
 )
 
 var (

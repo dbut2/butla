@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/dbut2/shortener-web/pkg/envs"
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/dbut2/shortener-web/pkg/models"
 	"github.com/dbut2/shortener-web/pkg/store"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type Config struct {
-	envs.Env `yaml:"env"`
 	Hostname string `yaml:"hostname"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
@@ -28,12 +27,7 @@ type Database struct {
 
 var _ store.Store = new(Database)
 
-func NewDatabase(c Config) (*Database, error) {
-	err := envs.LoadEnv(&c)
-	if err != nil {
-		return nil, err
-	}
-
+func New(c Config) (*Database, error) {
 	db := &Database{}
 
 	connStr := fmt.Sprintf("%s:%s@(%s)/%s?parseTime=true", c.Username, c.Password, c.Hostname, c.Database)
@@ -124,6 +118,40 @@ func (d *Database) Get(ctx context.Context, code string) (models.Link, bool, err
 	}
 
 	return link, true, nil
+}
+
+func (d *Database) GetAll(ctx context.Context) ([]models.Link, error) {
+	d.wg.Wait()
+
+	rows, err := d.db.QueryContext(ctx, "SELECT code, url, expiry, ip FROM links")
+	if err != nil {
+		return nil, err
+	}
+
+	var links []models.Link
+
+	for rows.Next() {
+		var dbl dbLink
+		err = rows.Scan(&dbl.code, &dbl.url, &dbl.expiry, &dbl.ip)
+		if err != nil {
+			return nil, err
+		}
+		link := models.Link{
+			Code: dbl.code,
+			Url:  dbl.url,
+			Expiry: models.NullTime{
+				Valid: dbl.expiry.Valid,
+				Value: dbl.expiry.Time,
+			},
+			IP: models.NullString{
+				Valid: dbl.ip.Valid,
+				Value: dbl.ip.String,
+			},
+		}
+		links = append(links, link)
+	}
+
+	return links, nil
 }
 
 type dbLink struct {

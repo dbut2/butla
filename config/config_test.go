@@ -6,9 +6,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
+
+	"github.com/dbut2/shortener-web/pkg/configs"
 )
 
 func TestConfigs(t *testing.T) {
+	configs.SkipLoading()
+
 	files, err := envs.ReadDir(".")
 	assert.NoError(t, err)
 
