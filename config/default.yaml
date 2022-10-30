@@ -1,3 +1,5 @@
 web:
   address: ":8080"
-  shortHost: "localhost:8080"
+  shortHost:
+    scheme: "http"
+    host: "localhost:8080"
