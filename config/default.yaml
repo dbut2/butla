@@ -3,6 +3,3 @@ web:
   host:
     scheme: "http"
     hostname: "localhost:8080"
-  store:
-    datastore:
-      secret: projects/540755457828/secrets/datastore-config/versions/latest
