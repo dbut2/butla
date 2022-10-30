@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"context"
+	"log"
 	"sync"
 
 	"cloud.google.com/go/datastore"
@@ -47,6 +48,7 @@ func (d *Datastore) Get(ctx context.Context, code string) (models.Link, bool, er
 	d.wg.Wait()
 	link := models.Link{}
 	err := d.client.Get(ctx, datastore.NameKey("link", code, nil), &link)
+	log.Println(link, code, err)
 	if err == datastore.ErrNoSuchEntity {
 		return link, false, nil
 	}
