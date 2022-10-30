@@ -21,7 +21,7 @@ type Redis struct {
 
 var _ store.Store = new(Redis)
 
-func NewRedis(c Config) (*Redis, error) {
+func New(c Config) (*Redis, error) {
 	return &Redis{client: redis.NewClient(&redis.Options{
 		Addr:     c.Host,
 		Password: c.Password,

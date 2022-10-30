@@ -1,4 +1,4 @@
-package config
+package configs
 
 import (
 	"gopkg.in/yaml.v3"
@@ -13,6 +13,13 @@ type Loader[T any] struct {
 type tempLoader[T any] Loader[T]
 
 func (l *Loader[T]) UnmarshalYAML(value *yaml.Node) error {
+	var tmp tempLoader[T]
+	err := value.Decode(&tmp)
+	if err != nil {
+		return err
+	}
+	*l = Loader[T](tmp)
+
 	var loaders []loader
 	if l.Env != nil {
 		loaders = append(loaders, l.Env)
@@ -20,13 +27,6 @@ func (l *Loader[T]) UnmarshalYAML(value *yaml.Node) error {
 	if l.Secret != nil {
 		loaders = append(loaders, l.Secret)
 	}
-
-	var tmp tempLoader[T]
-	err := value.Decode(&tmp)
-	if err != nil {
-		return err
-	}
-	*l = Loader[T](tmp)
 
 	return l.load(loaders...)
 }

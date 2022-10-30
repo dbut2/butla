@@ -27,7 +27,7 @@ func New(config Config) (*Server, error) {
 	var s store.Store
 
 	if config.Store.Database.C != nil {
-		db, err := database.NewDatabase(*config.Store.Database.C)
+		db, err := database.New(*config.Store.Database.C)
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +35,7 @@ func New(config Config) (*Server, error) {
 	}
 
 	if config.Store.Datastore.C != nil {
-		ds, err := datastore.NewDatastore(*config.Store.Datastore.C)
+		ds, err := datastore.New(*config.Store.Datastore.C)
 		if err != nil {
 			return nil, err
 		}
@@ -47,7 +47,7 @@ func New(config Config) (*Server, error) {
 	}
 
 	if config.Cache.Redis.C != nil {
-		r, err := redis.NewRedis(*config.Cache.Redis.C)
+		r, err := redis.New(*config.Cache.Redis.C)
 		if err != nil {
 			return nil, err
 		}
