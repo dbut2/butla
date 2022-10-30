@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -149,7 +148,6 @@ func (s *Server) Run() error {
 
 func (s *Server) lengthen(c *gin.Context, code string) {
 	link, err := s.shortener.Lengthen(c, code, shortener.WithIP(c.ClientIP()))
-	log.Println(code, link, err)
 	if err != nil {
 		_ = c.Error(err)
 		switch err {

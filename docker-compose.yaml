@@ -16,3 +16,5 @@ services:
     depends_on:
       - "mysql"
       - "redis"
+    volumes:
+      - "~/.config/gcloud:/root/.config/gcloud"

@@ -24,28 +24,28 @@ func main() {
 	var c Config
 	err := yaml.Unmarshal(config, &c)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	db, err := database.New(*c.Database.C)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	ds, err := datastore.New(*c.Datastore.C)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	links, err := db.GetAll(context.Background())
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	for _, link := range links {
 		err = ds.Set(context.Background(), link)
 		if err != nil {
-			log.Fatalln(err.Error())
+			log.Fatal(err.Error())
 		}
 	}
 }
