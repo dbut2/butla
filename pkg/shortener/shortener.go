@@ -125,10 +125,10 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 
 	link, has, err := d.store.Get(ctx, code)
 	if err != nil {
-		log.Print(err.Error())
 		return models.Link{}, ErrStore
 	}
 	if !has {
+		log.Print(err.Error())
 		return models.Link{}, ErrNotFound
 	}
 
