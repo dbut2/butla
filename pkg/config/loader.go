@@ -13,7 +13,13 @@ type Loader[T any] struct {
 type tempLoader[T any] Loader[T]
 
 func (l *Loader[T]) UnmarshalYAML(value *yaml.Node) error {
-	loaders := []loader{l.Env, l.Secret}
+	var loaders []loader
+	if l.Env != nil {
+		loaders = append(loaders, l.Env)
+	}
+	if l.Secret != nil {
+		loaders = append(loaders, l.Secret)
+	}
 
 	var tmp tempLoader[T]
 	err := value.Decode(&tmp)
@@ -31,9 +37,6 @@ type loader interface {
 
 func (l *Loader[T]) load(loaders ...loader) error {
 	for _, lr := range loaders {
-		if lr == nil {
-			return nil
-		}
 		bytes, err := lr.load()
 		if err != nil {
 			return err
