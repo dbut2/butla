@@ -66,3 +66,13 @@ func (d *Datastore) GetAll(ctx context.Context) ([]models.Link, error) {
 	}
 	return links, nil
 }
+
+func (d *Datastore) Delete(ctx context.Context, code string) error {
+	d.wg.Wait()
+
+	err := d.client.Delete(ctx, datastore.NameKey("link", code, nil))
+	if err != nil {
+		return err
+	}
+	return nil
+}

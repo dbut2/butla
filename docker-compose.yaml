@@ -3,6 +3,8 @@ services:
     image: "mysql"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    ports:
+      - "3306:3306"
     volumes:
       - "./pkg/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
   redis:

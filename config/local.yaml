@@ -14,5 +14,7 @@ web:
 admin:
   address: ":8081"
   store:
-    datastore:
-      project: "butla-sydney"
+    database:
+      hostname: "mysql:3306"
+      database: "shortener"
+      username: "root"

@@ -71,5 +71,15 @@ func (s *Server) Run() error {
 		c.String(http.StatusOK, fmt.Sprint(links))
 	})
 
+	r.GET("/delete/:code", func(c *gin.Context) {
+		code := c.Param("code")
+
+		err := s.shortener.Delete(c, code)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	})
+
 	return r.Run(s.address)
 }

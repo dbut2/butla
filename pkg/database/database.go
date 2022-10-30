@@ -154,6 +154,16 @@ func (d *Database) GetAll(ctx context.Context) ([]models.Link, error) {
 	return links, nil
 }
 
+func (d *Database) Delete(ctx context.Context, code string) error {
+	d.wg.Wait()
+
+	_, err := d.db.QueryContext(ctx, "DELETE FROM links WHERE code = ?", code)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type dbLink struct {
 	code   string
 	url    string

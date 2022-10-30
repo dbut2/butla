@@ -16,6 +16,7 @@ type Store interface {
 type AdminStore interface {
 	Store
 	GetAll(ctx context.Context) ([]models.Link, error)
+	Delete(ctx context.Context, code string) error
 }
 
 type CacheStore struct {
