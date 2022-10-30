@@ -1,7 +1,7 @@
 web:
   address: ":8080"
   shortHost:
-    schema: "http"
+    scheme: "http"
     host: "localhost:8080"
   store:
     database:

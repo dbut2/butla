@@ -1,7 +1,7 @@
 web:
   address: ":80"
   shortHost:
-    schema: "https"
+    scheme: "https"
     host: "dev.but.la"
   store:
     datastore:

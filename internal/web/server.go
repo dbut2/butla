@@ -18,7 +18,7 @@ import (
 
 type Server struct {
 	address   string
-	schema    string
+	scheme    string
 	host      string
 	shortener shortener.Shortener
 }
@@ -57,13 +57,13 @@ func New(config Config) (*Server, error) {
 		}
 	}
 
-	if config.ShortHost.Schema == "" {
-		config.ShortHost.Schema = "https"
+	if config.ShortHost.Scheme == "" {
+		config.ShortHost.Scheme = "https"
 	}
 
 	return &Server{
 		address:   config.Address,
-		schema:    config.ShortHost.Schema,
+		scheme:    config.ShortHost.Scheme,
 		host:      config.ShortHost.URL,
 		shortener: shortener.New(s),
 	}, nil
@@ -81,7 +81,7 @@ func (s *Server) Run() error {
 
 	r.GET("/shorten", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"schema": s.schema,
+			"scheme": s.scheme,
 		})
 	})
 

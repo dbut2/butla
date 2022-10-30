@@ -65,7 +65,7 @@
 	});
 
 	$("#copy").click(async () => {
-		await navigator.clipboard.writeText("{{ .schema }}://"+$("#url").val())
+		await navigator.clipboard.writeText("{{ .scheme }}://"+$("#url").val())
 	})
 </script>
 </body>

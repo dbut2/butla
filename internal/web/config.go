@@ -14,7 +14,7 @@ type Config struct {
 }
 
 type ShortHost struct {
-	Schema string `yaml:"schema" json:"schema" `
+	Scheme string `yaml:"scheme" json:"scheme" `
 	URL    string `yaml:"host"`
 }
 
