@@ -4,16 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/dbut2/shortener-web/pkg/envs"
+	"github.com/go-redis/redis/v8"
+
+	"github.com/dbut2/shortener-web/pkg/config"
 	"github.com/dbut2/shortener-web/pkg/models"
 	"github.com/dbut2/shortener-web/pkg/store"
-	"github.com/go-redis/redis/v8"
 )
 
 type Config struct {
-	envs.Env `yaml:"env"`
-	Host     string `yaml:"host"`
-	Password string `yaml:"password"`
+	config.Loader `yaml:",inline"`
+	Host          string `yaml:"host"`
+	Password      string `yaml:"password"`
 }
 
 type Redis struct {
@@ -22,15 +23,15 @@ type Redis struct {
 
 var _ store.Store = new(Redis)
 
-func NewRedis(config Config) (*Redis, error) {
-	err := envs.LoadEnv(&config)
+func NewRedis(c Config) (*Redis, error) {
+	err := config.Load(&c)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Redis{client: redis.NewClient(&redis.Options{
-		Addr:     config.Host,
-		Password: config.Password,
+		Addr:     c.Host,
+		Password: c.Password,
 	})}, nil
 }
 

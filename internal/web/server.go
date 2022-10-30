@@ -2,8 +2,6 @@ package web
 
 import (
 	"fmt"
-	"github.com/dbut2/shortener-web/pkg/database"
-	"github.com/dbut2/shortener-web/pkg/redis"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -11,7 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/dbut2/shortener-web/pkg/database"
 	"github.com/dbut2/shortener-web/pkg/datastore"
+	"github.com/dbut2/shortener-web/pkg/redis"
 	"github.com/dbut2/shortener-web/pkg/shortener"
 	"github.com/dbut2/shortener-web/pkg/store"
 )
