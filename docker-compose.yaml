@@ -8,11 +8,26 @@ services:
   redis:
     image: "redis:alpine"
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       ENV: "local"
     ports:
       - "8080:8080"
+    depends_on:
+      - "mysql"
+      - "redis"
+    volumes:
+      - "~/.config/gcloud:/root/.config/gcloud"
+  admin:
+    build:
+      context: .
+      dockerfile: admin.Dockerfile
+    environment:
+      ENV: "local"
+    ports:
+      - "8081:8081"
     depends_on:
       - "mysql"
       - "redis"

@@ -11,3 +11,8 @@ web:
   cache:
     redis:
       host: "redis:6379"
+admin:
+  address: ":8081"
+  store:
+    datastore:
+      project: "butla-sydney"

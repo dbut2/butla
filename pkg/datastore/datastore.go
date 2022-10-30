@@ -55,3 +55,14 @@ func (d *Datastore) Get(ctx context.Context, code string) (models.Link, bool, er
 	}
 	return link, true, nil
 }
+
+func (d *Datastore) GetAll(ctx context.Context) ([]models.Link, error) {
+	d.wg.Wait()
+
+	var links []models.Link
+	_, err := d.client.GetAll(ctx, datastore.NewQuery("link"), &links)
+	if err != nil {
+		return nil, err
+	}
+	return links, nil
+}

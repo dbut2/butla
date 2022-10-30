@@ -5,6 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/dbut2/shortener-web/internal/admin"
 	"github.com/dbut2/shortener-web/internal/web"
 )
 
@@ -14,7 +15,8 @@ var (
 )
 
 type Config struct {
-	Web web.Config `yaml:"web"`
+	Web   web.Config   `yaml:"web"`
+	Admin admin.Config `yaml:"admin"`
 }
 
 func LoadConfig(env string) (*Config, error) {

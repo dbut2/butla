@@ -1,29 +1,17 @@
-package web
+package admin
 
 import (
 	"github.com/dbut2/shortener-web/pkg/configs"
 	"github.com/dbut2/shortener-web/pkg/database"
 	"github.com/dbut2/shortener-web/pkg/datastore"
-	"github.com/dbut2/shortener-web/pkg/redis"
 )
 
 type Config struct {
 	Address string      `yaml:"address"`
-	Host    hostConfig  `yaml:"host"`
 	Store   storeConfig `yaml:"store"`
-	Cache   cacheConfig `yaml:"cache"`
-}
-
-type hostConfig struct {
-	Scheme   string `yaml:"scheme"`
-	Hostname string `yaml:"hostname"`
 }
 
 type storeConfig struct {
 	Database  configs.Loader[*database.Config]  `yaml:"database"`
 	Datastore configs.Loader[*datastore.Config] `yaml:"datastore"`
-}
-
-type cacheConfig struct {
-	Redis configs.Loader[*redis.Config] `yaml:"redis"`
 }

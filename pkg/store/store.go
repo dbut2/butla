@@ -13,6 +13,11 @@ type Store interface {
 	Get(ctx context.Context, code string) (models.Link, bool, error)
 }
 
+type AdminStore interface {
+	Store
+	GetAll(ctx context.Context) ([]models.Link, error)
+}
+
 type CacheStore struct {
 	Primary Store
 	Cache   Store
