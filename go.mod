@@ -3,7 +3,7 @@ module github.com/dbut2/shortener-web
 go 1.19
 
 require (
-	cloud.google.com/go/datastore v1.8.0
+	cloud.google.com/go/datastore v1.9.0
 	cloud.google.com/go/secretmanager v1.8.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5

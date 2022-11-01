@@ -1,6 +1,5 @@
 # cloud.google.com/go v0.105.0
 ## explicit; go 1.19
-cloud.google.com/go
 cloud.google.com/go/civil
 cloud.google.com/go/internal
 cloud.google.com/go/internal/fields
@@ -9,8 +8,8 @@ cloud.google.com/go/internal/version
 # cloud.google.com/go/compute v1.10.0
 ## explicit; go 1.17
 cloud.google.com/go/compute/metadata
-# cloud.google.com/go/datastore v1.8.0
-## explicit; go 1.15
+# cloud.google.com/go/datastore v1.9.0
+## explicit; go 1.19
 cloud.google.com/go/datastore
 cloud.google.com/go/datastore/internal
 cloud.google.com/go/datastore/internal/gaepb
