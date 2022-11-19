@@ -17,4 +17,4 @@ ALTER TABLE `links`
 ALTER TABLE `links`
     MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
-INSERT INTO `links` (`code`, `url`, `expiry`, `ip`) VALUES ('default', 'https://example.com', NULL, NULL);
+INSERT INTO `links` (`code`, `url`, `expiry`, `ip`) VALUES ('default', 'shorten', NULL, NULL);
