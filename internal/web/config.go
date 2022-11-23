@@ -1,10 +1,10 @@
 package web
 
 import (
-	"github.com/dbut2/shortener-web/pkg/configs"
-	"github.com/dbut2/shortener-web/pkg/database"
-	"github.com/dbut2/shortener-web/pkg/datastore"
-	"github.com/dbut2/shortener-web/pkg/redis"
+	"github.com/but-la/pkg/configs"
+	"github.com/but-la/pkg/store/database"
+	"github.com/but-la/pkg/store/datastore"
+	"github.com/but-la/pkg/store/redis"
 )
 
 type Config struct {

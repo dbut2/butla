@@ -4,7 +4,7 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     volumes:
-      - "./pkg/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+      - "./schema.sql:/docker-entrypoint-initdb.d/schema.sql"
   redis:
     image: "redis:alpine"
   web:

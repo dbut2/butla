@@ -11,7 +11,7 @@ func SkipLoading() {
 }
 
 type Loader[T any] struct {
-	C      T       `yaml:",inline"`
+	Config T       `yaml:",inline"`
 	Env    *Env    `yaml:"env"`
 	Secret *Secret `yaml:"secret"`
 }
@@ -51,7 +51,7 @@ func (l *Loader[T]) load(loaders ...loader) error {
 		if err != nil {
 			return err
 		}
-		err = yaml.Unmarshal(bytes, &l.C)
+		err = yaml.Unmarshal(bytes, &l.Config)
 		if err != nil {
 			return err
 		}

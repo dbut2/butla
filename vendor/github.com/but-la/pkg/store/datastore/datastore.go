@@ -6,8 +6,8 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"github.com/dbut2/shortener-web/pkg/models"
-	"github.com/dbut2/shortener-web/pkg/store"
+	"github.com/but-la/pkg/models"
+	"github.com/but-la/pkg/store"
 )
 
 type Config struct {

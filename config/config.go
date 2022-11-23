@@ -2,8 +2,10 @@ package config
 
 import (
 	"embed"
-	"github.com/dbut2/shortener-web/internal/web"
-	"github.com/dbut2/shortener-web/pkg/configs"
+
+	"github.com/but-la/pkg/configs"
+
+	"github.com/but-la/web/internal/web"
 )
 
 var (

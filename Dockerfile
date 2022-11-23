@@ -10,7 +10,6 @@ WORKDIR /app
 COPY ./vendor ./vendor
 COPY ./config ./config
 COPY ./internal ./internal
-COPY ./pkg ./pkg
 COPY ./go.mod go.mod
 COPY ./go.sum go.sum
 COPY ./web.go ./web.go
