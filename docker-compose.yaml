@@ -8,7 +8,9 @@ services:
   redis:
     image: "redis:alpine"
   web:
-    build: .
+    build:
+      dockerfile: web.Dockerfile
+      context: .
     environment:
       ENV: "local"
     ports:
