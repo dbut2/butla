@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/dbut2/shortener
+deps:
+  - buf.build/googleapis/googleapis

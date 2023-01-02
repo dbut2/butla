@@ -13,8 +13,8 @@ COPY ./internal ./internal
 COPY ./pkg ./pkg
 COPY ./go.mod go.mod
 COPY ./go.sum go.sum
-COPY ./web.go ./web.go
+COPY ./cmd/web/web.go ./cmd/web/web.go
 
-RUN go build -o web .
+RUN go build -o web cmd/web/web.go
 
 CMD ./web

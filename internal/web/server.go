@@ -9,11 +9,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/dbut2/shortener-web/pkg/database"
-	"github.com/dbut2/shortener-web/pkg/datastore"
-	"github.com/dbut2/shortener-web/pkg/redis"
-	"github.com/dbut2/shortener-web/pkg/shortener"
-	"github.com/dbut2/shortener-web/pkg/store"
+	"github.com/dbut2/butla/pkg/database"
+	"github.com/dbut2/butla/pkg/datastore"
+	"github.com/dbut2/butla/pkg/redis"
+	"github.com/dbut2/butla/pkg/shortener"
+	"github.com/dbut2/butla/pkg/store"
 )
 
 type Server struct {
@@ -26,16 +26,16 @@ type Server struct {
 func New(config Config) (*Server, error) {
 	var s store.Store
 
-	if config.Store.Database.C != nil {
-		db, err := database.New(*config.Store.Database.C)
+	if config.Store.Database.Config != nil {
+		db, err := database.New(*config.Store.Database.Config)
 		if err != nil {
 			return nil, err
 		}
 		s = db
 	}
 
-	if config.Store.Datastore.C != nil {
-		ds, err := datastore.New(*config.Store.Datastore.C)
+	if config.Store.Datastore.Config != nil {
+		ds, err := datastore.New(*config.Store.Datastore.Config)
 		if err != nil {
 			return nil, err
 		}
@@ -46,8 +46,8 @@ func New(config Config) (*Server, error) {
 		s = store.InMem()
 	}
 
-	if config.Cache.Redis.C != nil {
-		r, err := redis.New(*config.Cache.Redis.C)
+	if config.Cache.Redis.Config != nil {
+		r, err := redis.New(*config.Cache.Redis.Config)
 		if err != nil {
 			return nil, err
 		}

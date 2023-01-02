@@ -2,6 +2,7 @@ package configs
 
 import (
 	"embed"
+
 	"gopkg.in/yaml.v3"
 )
 

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 
-	"github.com/dbut2/shortener-web/pkg/configs"
+	"github.com/dbut2/butla/pkg/configs"
 )
 
 func TestConfigs(t *testing.T) {

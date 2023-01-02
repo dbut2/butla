@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/dbut2/shortener-web/pkg/models"
-	"github.com/dbut2/shortener-web/pkg/store"
+	"github.com/dbut2/butla/pkg/models"
+	"github.com/dbut2/butla/pkg/store"
 )
 
 type Shortener interface {
@@ -47,6 +47,8 @@ func WithIP(ip string) Metadata {
 type shortener struct {
 	store store.Store
 }
+
+var _ Shortener = new(shortener)
 
 func New(store store.Store) Shortener {
 	return shortener{store: store}
