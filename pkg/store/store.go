@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/dbut2/shortener-web/pkg/models"
+	"github.com/dbut2/butla/pkg/models"
 )
 
 type Store interface {

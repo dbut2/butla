@@ -7,9 +7,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/dbut2/shortener-web/pkg/configs"
-	"github.com/dbut2/shortener-web/pkg/database"
-	"github.com/dbut2/shortener-web/pkg/datastore"
+	"github.com/dbut2/butla/pkg/configs"
+	"github.com/dbut2/butla/pkg/database"
+	"github.com/dbut2/butla/pkg/datastore"
 )
 
 type Config struct {
@@ -27,12 +27,12 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	db, err := database.New(*c.Database.C)
+	db, err := database.New(*c.Database.Config)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	ds, err := datastore.New(*c.Datastore.C)
+	ds, err := datastore.New(*c.Datastore.Config)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

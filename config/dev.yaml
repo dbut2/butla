@@ -6,3 +6,10 @@ web:
   store:
     datastore:
       env: DATASTORE
+
+api:
+  address: ":8080"
+  database:
+    gsmResourceID: projects/540755457828/secrets/database-config/versions/latest
+  redis:
+    gsmResourceID: projects/540755457828/secrets/redis-config/versions/latest
