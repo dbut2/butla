@@ -3,10 +3,25 @@ services:
     image: "mysql"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    ports:
+      - "3306:3306"
     volumes:
-      - "./pkg/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+      - "./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
   redis:
     image: "redis:alpine"
+  lengthener:
+    build:
+      dockerfile: lengthener.Dockerfile
+      context: .
+    environment:
+      ENV: "local"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "mysql"
+      - "redis"
+    volumes:
+      - "~/.config/gcloud:/root/.config/gcloud"
   web:
     build:
       dockerfile: web.Dockerfile
@@ -14,7 +29,7 @@ services:
     environment:
       ENV: "local"
     ports:
-      - "8080:8080"
+      - "8088:8080"
     depends_on:
       - "mysql"
       - "redis"

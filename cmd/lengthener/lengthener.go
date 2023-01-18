@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/dbut2/butla/configs"
-	"github.com/dbut2/butla/internal/web"
+	"github.com/dbut2/butla/internal/lengthener"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		config.Web.Address = ":" + port
 	}
 
-	server, err := web.New(config.Web)
+	server, err := lengthener.New(config.Lengthener)
 	if err != nil {
 		panic(err.Error())
 	}

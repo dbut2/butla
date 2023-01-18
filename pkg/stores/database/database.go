@@ -27,7 +27,7 @@ type Database struct {
 
 var _ store.Store = new(Database)
 
-func New(c Config) (*Database, error) {
+func New(c *Config) (*Database, error) {
 	db := &Database{}
 
 	connStr := fmt.Sprintf("%s:%s@(%s)/%s?parseTime=true", c.Username, c.Password, c.Hostname, c.Database)

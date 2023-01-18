@@ -1,0 +1,14 @@
+lengthener:
+  address: ":8080"
+  store:
+    datastore:
+      env: DATASTORE
+
+web:
+  address: ":8080"
+  host:
+    scheme: "https"
+    hostname: "dev.but.la"
+  store:
+    datastore:
+      env: DATASTORE
