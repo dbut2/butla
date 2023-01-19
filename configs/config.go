@@ -1,9 +1,9 @@
-package config
+package configs
 
 import (
 	"embed"
 
-	"github.com/dbut2/butla/internal/api"
+	"github.com/dbut2/butla/internal/lengthener"
 	"github.com/dbut2/butla/internal/web"
 	"github.com/dbut2/butla/pkg/configs"
 )
@@ -14,8 +14,8 @@ var (
 )
 
 type Config struct {
-	Web web.Config `yaml:"web"`
-	API api.Config `yaml:"api"`
+	Lengthener *lengthener.Config `yaml:"lengthener"`
+	Web        *web.Config        `yaml:"web"`
 }
 
 func LoadConfig(env string) (*Config, error) {

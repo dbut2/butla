@@ -21,7 +21,7 @@ type Datastore struct {
 
 var _ store.Store = new(Datastore)
 
-func New(c Config) (*Datastore, error) {
+func New(c *Config) (*Datastore, error) {
 	d := &Datastore{}
 
 	d.wg.Add(1)
