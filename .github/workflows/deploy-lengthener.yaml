@@ -1,4 +1,4 @@
-name: Deploy Web
+name: Deploy Lengthener
 on:
   push:
     branches:
@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKERFILE: web.Dockerfile
-  IMAGE_NAME: asia.gcr.io/but-la/web
+  DOCKERFILE: lengthener.Dockerfile
+  IMAGE_NAME: asia.gcr.io/but-la/lengthener
   PROJECT_ID: but-la
   REGION: australia-southeast1
 
@@ -46,7 +46,6 @@ jobs:
         REDIS=redis-config:latest
     environment:
       name: test
-      url: https://web-test.but.la/shorten
     needs:
       - build
 
@@ -65,7 +64,7 @@ jobs:
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
           secrets: ${{ env.SECRETS }}
-          service: web-test
+          service: lengthener-test
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-dev:
@@ -79,7 +78,6 @@ jobs:
         REDIS=redis-config:latest
     environment:
       name: dev
-      url: https://web-dev.but.la/shorten
     needs:
       - build
 
@@ -98,7 +96,7 @@ jobs:
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
           secrets: ${{ env.SECRETS }}
-          service: web-dev
+          service: lengthener-dev
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-prod:
@@ -112,7 +110,6 @@ jobs:
         REDIS=redis-config:latest
     environment:
       name: prod
-      url: https://web.but.la/shorten
     needs:
       - build
       - deploy-dev
@@ -132,5 +129,5 @@ jobs:
           region: ${{ env.REGION }}
           env_vars: ENV=${{ env.ENV }}
           secrets: ${{ env.SECRETS }}
-          service: web-prod
+          service: lengthener-prod
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
