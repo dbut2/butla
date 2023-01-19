@@ -45,7 +45,7 @@ jobs:
         DATASTORE=datastore-config:latest
         REDIS=redis-config:latest
     environment:
-      name: test
+      name: web-test
       url: https://web-test.but.la/shorten
     needs:
       - build
@@ -78,7 +78,7 @@ jobs:
         DATASTORE=datastore-config:latest
         REDIS=redis-config:latest
     environment:
-      name: dev
+      name: web-dev
       url: https://web-dev.but.la/shorten
     needs:
       - build
@@ -111,7 +111,7 @@ jobs:
         DATASTORE=datastore-config:latest
         REDIS=redis-config:latest
     environment:
-      name: prod
+      name: web-prod
       url: https://web.but.la/shorten
     needs:
       - build
