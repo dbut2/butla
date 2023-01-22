@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  SERVICE: web
   DOCKERFILE: web.Dockerfile
   IMAGE_HOST: asia.gcr.io
   IMAGE_NAME: asia.gcr.io/but-la/web
@@ -23,7 +22,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-test
+      name: web-test
       url: https://web-test.but.la/
     needs:
       - build
@@ -42,7 +41,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-dev
+      name: web-dev
       url: https://web-dev.but.la/
     needs:
       - build
@@ -60,7 +59,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-prod
+      name: web-prod
       url: https://web.but.la/
     needs:
       - build

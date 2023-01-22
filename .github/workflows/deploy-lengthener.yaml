@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  SERVICE: lengthener
   DOCKERFILE: lengthener.Dockerfile
   IMAGE_HOST: asia.gcr.io
   IMAGE_NAME: asia.gcr.io/but-la/lengthener
@@ -23,7 +22,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-test
+      name: lengthener-test
     needs:
       - build
 
@@ -41,7 +40,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-dev
+      name: lengthener-dev
     needs:
       - build
 
@@ -58,7 +57,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-prod
+      name: lengthener-prod
     needs:
       - build
       - deploy-dev
