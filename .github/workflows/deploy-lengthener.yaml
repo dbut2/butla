@@ -27,6 +27,7 @@ jobs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
           env: test
@@ -45,6 +46,7 @@ jobs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
           env: dev
@@ -63,6 +65,7 @@ jobs:
       - deploy-dev
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
           env: prod
