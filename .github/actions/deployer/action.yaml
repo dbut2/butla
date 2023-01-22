@@ -1,5 +1,5 @@
-name: 'Deployer'
-description: 'Deploy image to Cloud Run'
+name: "Deployer"
+description: "Deploy image to Cloud Run"
 inputs:
   credentials_json:
     description: "Credentials"
@@ -18,24 +18,23 @@ runs:
       uses: actions/checkout@v3
 
     - id: auth
-      uses: 'google-github-actions/auth@v0'
+      uses: "google-github-actions/auth@v0"
       with:
         credentials_json: ${{ inputs.credentials_json }}
 
     - id: get-config
       shell: bash
       run: |
-        echo "CONFIG<<EOF" >> $GITHUB_ENV
-        echo "$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml)" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+        echo "{\"CONFIG\":\"$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml)\"}" >> config.json
+        ls
+        cat ./config.json
 
-
-    - id: 'deploy'
-      uses: 'google-github-actions/deploy-cloudrun@v0'
+    - id: "deploy"
+      uses: "google-github-actions/deploy-cloudrun@v0"
       with:
         project_id: ${{ env.PROJECT_ID }}
         region: ${{ env.REGION }}
-        env_vars: CONFIG="'${{ env.CONFIG }}'"
+        env_vars_file: config.json
         secrets: ${{ inputs.secrets }}
         service: web-test
         image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
