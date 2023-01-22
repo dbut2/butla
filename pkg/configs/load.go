@@ -2,6 +2,7 @@ package configs
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -13,6 +14,9 @@ func LoadConfig[T any]() (*T, error) {
 		return nil, err
 	}
 
+	fmt.Println(bytes)
+	fmt.Println(string(bytes))
+
 	config := new(T)
 	err = yaml.Unmarshal(bytes, config)
 	if err != nil {
@@ -23,24 +27,22 @@ func LoadConfig[T any]() (*T, error) {
 }
 
 func findBytes() ([]byte, error) {
-	if str := os.Getenv("CONFIG"); str != "" {
-		return []byte(str), nil
+	file := "config.yaml"
+
+	if e := os.Getenv("ENV"); e != "" {
+		f := fmt.Sprintf("config/%s.yaml", e)
+		if _, err := os.Stat(f); err == nil {
+			file = f
+		}
 	}
 
-	file := "config.yaml"
 	if f := os.Getenv("CONFIG_FILE"); f != "" {
 		file = f
 	}
 
-	_, err := os.Open(file)
-
-	if err != os.ErrNotExist {
-		if err != nil {
-			return nil, err
-		}
-
-		return os.ReadFile(file)
+	if _, err := os.Stat(file); err != nil {
+		return nil, errors.New("config file not found")
 	}
 
-	return nil, errors.New("config not found")
+	return os.ReadFile(file)
 }

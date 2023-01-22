@@ -7,11 +7,6 @@ import (
 )
 
 func main() {
-	env := os.Getenv("ENV")
-	if env == "" {
-		env = "default"
-	}
-
 	config, err := configs.LoadConfig[Config]()
 	if err != nil {
 		panic(err.Error())

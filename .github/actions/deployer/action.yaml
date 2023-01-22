@@ -1,9 +1,12 @@
-name: 'Deployer'
-description: 'Deploy image to Cloud Run'
+name: "Deployer"
+description: "Deploy image to Cloud Run"
 inputs:
+  credentials_json:
+    description: "Credentials"
+    required: true
   env:
-    description: "Environment variables"
-    required: false
+    description: "Environment"
+    required: true
   secrets:
     description: "GSM Secrets"
     required: false
@@ -14,17 +17,17 @@ runs:
     - id: checkout
       uses: actions/checkout@v3
 
-    - id: 'auth'
-      uses: 'google-github-actions/auth@v0'
+    - id: auth
+      uses: "google-github-actions/auth@v0"
       with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        credentials_json: ${{ inputs.credentials_json }}
 
-    - id: 'deploy'
-      uses: 'google-github-actions/deploy-cloudrun@v0'
+    - id: "deploy"
+      uses: "google-github-actions/deploy-cloudrun@v1"
       with:
         project_id: ${{ env.PROJECT_ID }}
         region: ${{ env.REGION }}
         env_vars: ENV=${{ inputs.env }}
         secrets: ${{ inputs.secrets }}
-        service: web-test
-        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+        service: ${{ env.SERVICE }}-${{ inputs.env }}
+        image: ${{ env.IMAGE_HOST }}/${{ env.IMAGE_NAME }}:${{ github.sha }}

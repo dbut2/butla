@@ -7,29 +7,49 @@ on:
 
 env:
   SERVICE: lengthener
-  DOCKERFILE: lengthener.Dockerfile
+  DOCKERFILE: deploy/lengthener/Dockerfile
   IMAGE_HOST: asia.gcr.io
-  IMAGE_NAME: asia.gcr.io/but-la/lengthener
+  IMAGE_NAME: but-la/lengthener
   PROJECT_ID: but-la
   REGION: australia-southeast1
 
 jobs:
-  build:
+  dh_build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/dh_builder
+        with:
+          dockerhub_username: ${{ secrets.DH_USER }}
+          dockerhub_password: ${{ secrets.DH_TOKEN }}
+          dockerfile: lengthener/Dockerfile
+          image: dbut2/butla-lengthener
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      dh_build
+    steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/builder
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          image_host: ${{ env.IMAGE_HOST }}
+          image_name: ${{ env.IMAGE_NAME }}
 
   deploy-test:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-test
+      name: lengthener-test
     needs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
           env: test
           secrets: |
             DATABASE=database-config:latest
@@ -41,13 +61,15 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-dev
+      name: lengthener-dev
     needs:
       - build
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
           env: dev
           secrets: |
             DATABASE=database-config:latest
@@ -58,14 +80,16 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.SERVICE }}-prod
+      name: lengthener-prod
     needs:
       - build
       - deploy-dev
 
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/deployer
         with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
           env: prod
           secrets: |
             DATABASE=database-config:latest
