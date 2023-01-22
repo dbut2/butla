@@ -34,7 +34,6 @@ jobs:
       - uses: ./.github/actions/deployer
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          env: test
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
@@ -54,7 +53,6 @@ jobs:
       - uses: ./.github/actions/deployer
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          env: dev
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
@@ -74,7 +72,6 @@ jobs:
       - uses: ./.github/actions/deployer
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          env: prod
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
