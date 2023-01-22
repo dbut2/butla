@@ -24,7 +24,7 @@ runs:
 
     - id: get-config
       shell: bash
-      run: echo "CONFIG=$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }})" >> $GITHUB_OUTPUT
+      run: echo "CONFIG=$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml)" >> $GITHUB_OUTPUT
 
 
     - id: 'deploy'
