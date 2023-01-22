@@ -24,7 +24,10 @@ runs:
 
     - id: get-config
       shell: bash
-      run: echo "CONFIG=$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml)" >> $GITHUB_OUTPUT
+      run: |
+        echo "CONFIG<<EOF" >> $GITHUB_ENV
+        echo "$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml)" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
 
     - id: 'deploy'
@@ -32,7 +35,7 @@ runs:
       with:
         project_id: ${{ env.PROJECT_ID }}
         region: ${{ env.REGION }}
-        env_vars: CONFIG=${{ steps.get-config.outputs.CONFIG }}
+        env_vars: CONFIG="'${{ env.CONFIG }}'"
         secrets: ${{ inputs.secrets }}
         service: web-test
         image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
