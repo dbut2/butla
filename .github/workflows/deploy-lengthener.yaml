@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 env:
+  SERVICE: lengthener
   DOCKERFILE: lengthener.Dockerfile
+  IMAGE_HOST: asia.gcr.io
   IMAGE_NAME: asia.gcr.io/but-la/lengthener
   PROJECT_ID: but-la
   REGION: australia-southeast1
@@ -15,119 +17,57 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - id: auth
-        uses: 'google-github-actions/auth@v0'
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          token_format: "access_token"
-
-      - name: "Docker login"
-        run: |
-          echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
-
-      - name: "Build and push"
-        run: |
-          docker build -f ${{ env.DOCKERFILE }} -t ${{ env.IMAGE_NAME }} .
-          docker tag  ${{ env.IMAGE_NAME }} ${{ env.IMAGE_NAME }}:latest
-          docker tag  ${{ env.IMAGE_NAME }} ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ env.IMAGE_NAME }}:latest
-          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - uses: ./.github/actions/builder
 
   deploy-test:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    env:
-      ENV: test
-      SECRETS: |
-        DATABASE=database-config:latest
-        DATASTORE=datastore-config:latest
-        REDIS=redis-config:latest
     environment:
-      name: lengthener-test
+      name: ${{ env.SERVICE }}-test
     needs:
       - build
 
     steps:
-      - uses: actions/checkout@v3
-
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v0'
+      - uses: ./.github/actions/deployer
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v0'
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          region: ${{ env.REGION }}
-          env_vars: ENV=${{ env.ENV }}
-          secrets: ${{ env.SECRETS }}
-          service: lengthener-test
-          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          env: test
+          secrets: |
+            DATABASE=database-config:latest
+            DATASTORE=datastore-config:latest
+            REDIS=redis-config:latest
+  
 
   deploy-dev:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    env:
-      ENV: dev
-      SECRETS: |
-        DATABASE=database-config:latest
-        DATASTORE=datastore-config:latest
-        REDIS=redis-config:latest
     environment:
-      name: lengthener-dev
+      name: ${{ env.SERVICE }}-dev
     needs:
       - build
 
     steps:
-      - uses: actions/checkout@v3
-
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v0'
+      - uses: ./.github/actions/deployer
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v0'
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          region: ${{ env.REGION }}
-          env_vars: ENV=${{ env.ENV }}
-          secrets: ${{ env.SECRETS }}
-          service: lengthener-dev
-          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          env: dev
+          secrets: |
+            DATABASE=database-config:latest
+            DATASTORE=datastore-config:latest
+            REDIS=redis-config:latest
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    env:
-      ENV: prod
-      SECRETS: |
-        DATABASE=database-config:latest
-        DATASTORE=datastore-config:latest
-        REDIS=redis-config:latest
     environment:
-      name: lengthener-prod
+      name: ${{ env.SERVICE }}-prod
     needs:
       - build
       - deploy-dev
 
     steps:
-      - uses: actions/checkout@v3
-
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v0'
+      - uses: ./.github/actions/deployer
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v0'
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          region: ${{ env.REGION }}
-          env_vars: ENV=${{ env.ENV }}
-          secrets: ${{ env.SECRETS }}
-          service: lengthener-prod
-          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          env: prod
+          secrets: |
+            DATABASE=database-config:latest
+            DATASTORE=datastore-config:latest
+            REDIS=redis-config:latest

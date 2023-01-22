@@ -8,10 +8,10 @@ services:
     volumes:
       - "./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
   redis:
-    image: "redis:alpine"
+    image: "redis"
   lengthener:
     build:
-      dockerfile: lengthener.Dockerfile
+      dockerfile: lengthener/Dockerfile
       context: .
     environment:
       ENV: "local"
@@ -21,10 +21,11 @@ services:
       - "mysql"
       - "redis"
     volumes:
+      - "./config/lengthener/local.yaml:/app/config.yaml"
       - "~/.config/gcloud:/root/.config/gcloud"
   web:
     build:
-      dockerfile: web.Dockerfile
+      dockerfile: web/Dockerfile
       context: .
     environment:
       ENV: "local"
@@ -34,4 +35,5 @@ services:
       - "mysql"
       - "redis"
     volumes:
+      - "./config/web/local.yaml:/app/config.yaml"
       - "~/.config/gcloud:/root/.config/gcloud"

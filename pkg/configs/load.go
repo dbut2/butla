@@ -1,13 +1,14 @@
 package configs
 
 import (
-	"embed"
+	"errors"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
-func LoadConfig[T any](envs embed.FS, env string) (*T, error) {
-	bytes, err := envs.ReadFile(env + ".yaml")
+func LoadConfig[T any]() (*T, error) {
+	bytes, err := findBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -19,4 +20,27 @@ func LoadConfig[T any](envs embed.FS, env string) (*T, error) {
 	}
 
 	return config, nil
+}
+
+func findBytes() ([]byte, error) {
+	if str := os.Getenv("CONFIG"); str != "" {
+		return []byte(str), nil
+	}
+
+	file := "config.yaml"
+	if f := os.Getenv("CONFIG_FILE"); f != "" {
+		file = f
+	}
+
+	_, err := os.Open(file)
+
+	if err != os.ErrNotExist {
+		if err != nil {
+			return nil, err
+		}
+
+		return os.ReadFile(file)
+	}
+
+	return nil, errors.New("config not found")
 }
