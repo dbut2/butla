@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKERFILE: lengthener.Dockerfile
+  DOCKERFILE: lengthener/Dockerfile
   IMAGE_HOST: asia.gcr.io
   IMAGE_NAME: asia.gcr.io/but-la/lengthener
   PROJECT_ID: but-la
