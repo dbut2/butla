@@ -2,6 +2,7 @@ package configs
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -12,6 +13,9 @@ func LoadConfig[T any]() (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(bytes)
+	fmt.Println(string(bytes))
 
 	config := new(T)
 	err = yaml.Unmarshal(bytes, config)

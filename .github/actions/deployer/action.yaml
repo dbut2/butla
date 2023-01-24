@@ -25,7 +25,7 @@ runs:
     - id: get-config
       shell: bash
       run: |
-        echo "{\"CONFIG\":\"$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml | sed s/\"/\\\\\"/g)\"}" > config.json
+        echo "{\"CONFIG\":\"$(cat ./config/${{ env.SERVICE }}/${{ inputs.env }}.yaml | sed s/\"/\\\\\"/g)\"}" | sed s/\n/\\\n/g > config.json
         ls
         cat ./config.json
 
