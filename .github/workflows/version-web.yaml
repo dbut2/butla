@@ -1,0 +1,24 @@
+name: Version Web
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/version-web.yaml
+      - web/**
+      - config/**
+      - pkg/**
+      - vendor/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Git Version
+        uses: codacy/git-version@2.5.4
+        with:
+          prefix: web-
