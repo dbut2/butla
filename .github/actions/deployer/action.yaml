@@ -29,5 +29,5 @@ runs:
         region: ${{ env.REGION }}
         env_vars: ENV=${{ inputs.env }}
         secrets: ${{ inputs.secrets }}
-        service: web-test
+        service: ${{ env.SERVICE }}-${{ inputs.env }}
         image: ${{ env.IMAGE_HOST }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
