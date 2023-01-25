@@ -335,12 +335,6 @@ type DecodeOptions struct {
 	//
 	// This mostly impacts when we decode registered extensions.
 	PreferPointerForStructOrArray bool
-
-	// ValidateUnicode controls will cause decoding to fail if an expected unicode
-	// string is well-formed but include invalid codepoints.
-	//
-	// This could have a performance impact.
-	ValidateUnicode bool
 }
 
 // ----------------------------------------
@@ -666,16 +660,6 @@ func decStructFieldKeyNotString(dd decDriver, keyType valueType, b *[decScratchB
 	return
 }
 
-func (d *Decoder) kStructField(si *structFieldInfo, rv reflect.Value) {
-	if d.d.TryNil() {
-		if rv = si.path.field(rv); rv.IsValid() {
-			decSetNonNilRV2Zero(rv)
-		}
-		return
-	}
-	d.decodeValueNoCheckNil(si.path.fieldAlloc(rv), nil)
-}
-
 func (d *Decoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 	ctyp := d.d.ContainerType()
 	ti := f.ti
@@ -707,7 +691,7 @@ func (d *Decoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 			}
 			d.mapElemValue()
 			if si := ti.siForEncName(rvkencname); si != nil {
-				d.kStructField(si, rv)
+				d.decodeValue(si.path.fieldAlloc(rv), nil)
 			} else if mf != nil {
 				// store rvkencname in new []byte, as it previously shares Decoder.b, which is used in decode
 				name2 = append(name2[:0], rvkencname...)
@@ -742,7 +726,7 @@ func (d *Decoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 				break
 			}
 			d.arrayElem()
-			d.kStructField(si, rv)
+			d.decodeValue(si.path.fieldAlloc(rv), nil)
 		}
 		var proceed bool
 		if hasLen {
@@ -1521,15 +1505,14 @@ func (d *Decoder) naked() *fauxUnion {
 // We will decode and store a value in that nil interface.
 //
 // Sample usages:
+//   // Decoding into a non-nil typed value
+//   var f float32
+//   err = codec.NewDecoder(r, handle).Decode(&f)
 //
-//	// Decoding into a non-nil typed value
-//	var f float32
-//	err = codec.NewDecoder(r, handle).Decode(&f)
-//
-//	// Decoding into nil interface
-//	var v interface{}
-//	dec := codec.NewDecoder(r, handle)
-//	err = dec.Decode(&v)
+//   // Decoding into nil interface
+//   var v interface{}
+//   dec := codec.NewDecoder(r, handle)
+//   err = dec.Decode(&v)
 //
 // When decoding into a nil interface{}, we will decode into an appropriate value based
 // on the contents of the stream:
@@ -1537,7 +1520,6 @@ func (d *Decoder) naked() *fauxUnion {
 //   - Other values are decoded appropriately depending on the type:
 //     bool, string, []byte, time.Time, etc
 //   - Extensions are decoded as RawExt (if no ext function registered for the tag)
-//
 // Configurations exist on the Handle to override defaults
 // (e.g. for MapType, SliceType and how to decode raw bytes).
 //
@@ -2175,9 +2157,9 @@ func (x decSliceHelper) arrayCannotExpand(hasLen bool, lenv, j, containerLenS in
 // decNextValueBytesHelper helps with NextValueBytes calls.
 //
 // Typical usage:
-//   - each Handle's decDriver will implement a high level nextValueBytes,
-//     which will track the current cursor, delegate to a nextValueBytesR
-//     method, and then potentially call bytesRdV at the end.
+//    - each Handle's decDriver will implement a high level nextValueBytes,
+//      which will track the current cursor, delegate to a nextValueBytesR
+//      method, and then potentially call bytesRdV at the end.
 //
 // See simple.go for typical usage model.
 type decNextValueBytesHelper struct {
@@ -2323,10 +2305,10 @@ func decByteSlice(r *decRd, clen, maxInitLen int, bs []byte) (bsOut []byte) {
 }
 
 // decInferLen will infer a sensible length, given the following:
-//   - clen: length wanted.
-//   - maxlen: max length to be returned.
-//     if <= 0, it is unset, and we infer it based on the unit size
-//   - unit: number of bytes for each element of the collection
+//    - clen: length wanted.
+//    - maxlen: max length to be returned.
+//      if <= 0, it is unset, and we infer it based on the unit size
+//    - unit: number of bytes for each element of the collection
 func decInferLen(clen, maxlen, unit int) int {
 	// anecdotal testing showed increase in allocation with map length of 16.
 	// We saw same typical alloc from 0-8, then a 20% increase at 16.

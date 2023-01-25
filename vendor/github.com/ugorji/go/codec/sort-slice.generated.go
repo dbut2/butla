@@ -5,11 +5,9 @@
 
 package codec
 
-import (
-	"bytes"
-	"reflect"
-	"time"
-)
+import "time"
+import "reflect"
+import "bytes"
 
 type stringSlice []string
 
@@ -109,6 +107,18 @@ func (p int64RvSlice) Len() int      { return len(p) }
 func (p int64RvSlice) Swap(i, j int) { p[uint(i)], p[uint(j)] = p[uint(j)], p[uint(i)] }
 func (p int64RvSlice) Less(i, j int) bool {
 	return p[uint(i)].v < p[uint(j)].v
+}
+
+type boolRv struct {
+	v bool
+	r reflect.Value
+}
+type boolRvSlice []boolRv
+
+func (p boolRvSlice) Len() int      { return len(p) }
+func (p boolRvSlice) Swap(i, j int) { p[uint(i)], p[uint(j)] = p[uint(j)], p[uint(i)] }
+func (p boolRvSlice) Less(i, j int) bool {
+	return !p[uint(i)].v && p[uint(j)].v
 }
 
 type timeRv struct {

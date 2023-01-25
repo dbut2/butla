@@ -463,11 +463,7 @@ func isEmptyValueFallbackRecur(urv *unsafeReflectValue, v reflect.Value, tinfos 
 	case reflect.Map:
 		return urv.ptr == nil || len_map(rvRefPtr(urv)) == 0
 	case reflect.Array:
-		return v.Len() == 0 ||
-			urv.ptr == nil ||
-			urv.typ == nil ||
-			rtsize2(urv.typ) == 0 ||
-			unsafeCmpZero(urv.ptr, int(rtsize2(urv.typ)))
+		return v.Len() == 0
 	}
 	return false
 }

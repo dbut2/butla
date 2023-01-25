@@ -7,7 +7,6 @@ import (
 	"math"
 	"reflect"
 	"time"
-	"unicode/utf8"
 )
 
 // major
@@ -630,11 +629,7 @@ func (d *cborDecDriver) DecodeBytes(bs []byte) (bsOut []byte) {
 }
 
 func (d *cborDecDriver) DecodeStringAsBytes() (s []byte) {
-	s = d.DecodeBytes(nil)
-	if d.h.ValidateUnicode && !utf8.Valid(s) {
-		d.d.errorf("DecodeStringAsBytes: invalid UTF-8: %s", s)
-	}
-	return
+	return d.DecodeBytes(nil)
 }
 
 func (d *cborDecDriver) DecodeTime() (t time.Time) {
