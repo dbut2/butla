@@ -23,7 +23,7 @@ jobs:
           dockerhub_username: ${{ secrets.DH_USER }}
           dockerhub_password: ${{ secrets.DH_TOKEN }}
           dockerfile: lengthener/Dockerfile
-          image: butla/lengthener
+          image: dbut2/butla/lengthener
 
   build:
     runs-on: ubuntu-latest
