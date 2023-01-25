@@ -14,9 +14,6 @@ func LoadConfig[T any]() (*T, error) {
 		return nil, err
 	}
 
-	fmt.Println(bytes)
-	fmt.Println(string(bytes))
-
 	config := new(T)
 	err = yaml.Unmarshal(bytes, config)
 	if err != nil {
