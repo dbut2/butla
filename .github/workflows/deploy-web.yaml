@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: web-test
-      url: https://web-test.but.la/
+      url: https://web.test.but.la/
     needs:
       - build
 
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: web-dev
-      url: https://web-dev.but.la/
+      url: https://web.dev.but.la/
     needs:
       - build
 

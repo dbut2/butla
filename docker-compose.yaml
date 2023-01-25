@@ -1,39 +1,48 @@
 services:
   mysql:
-    image: "mysql"
+    image: mysql
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
-      - "./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   redis:
-    image: "redis"
+    image: redis
   lengthener:
     build:
       dockerfile: lengthener/Dockerfile
-      context: .
+    configs:
+      - lengthener.yaml
     environment:
-      ENV: "local"
+      ENV: local
+      CONFIG_FILE: /lengthener.yaml
     ports:
-      - "8080:8080"
+      - 8080:8080
     depends_on:
-      - "mysql"
-      - "redis"
+      - mysql
+      - redis
     volumes:
-      - "./config/lengthener/local.yaml:/app/config.yaml"
-      - "~/.config/gcloud:/root/.config/gcloud"
+      - ./config/lengthener/local.yaml:/app/config.yaml
+      - ~/.config/gcloud:/root/.config/gcloud
   web:
     build:
       dockerfile: web/Dockerfile
-      context: .
+    configs:
+      - web.yaml
     environment:
-      ENV: "local"
+      ENV: local
+      CONFIG_FILE: /web.yaml
     ports:
-      - "8088:8080"
+      - 8088:8080
     depends_on:
-      - "mysql"
-      - "redis"
+      - mysql
+      - redis
     volumes:
-      - "./config/web/local.yaml:/app/config.yaml"
-      - "~/.config/gcloud:/root/.config/gcloud"
+      - ./config/web/local.yaml:/app/config.yaml
+      - ~/.config/gcloud:/root/.config/gcloud
+configs:
+  lengthener.yaml:
+    file: deploy/lengthener/local.yaml
+  web.yaml:
+    file: deploy/web/local.yaml
