@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/dh_builder
         with:
+          dockerhub_username: ${{ secrets.DH_USER }}
+          dockerhub_password: ${{ secrets.DH_TOKEN }}
           dockerfile: lengthener/Dockerfile
           image: butla/lengthener
 

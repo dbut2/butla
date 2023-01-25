@@ -1,6 +1,12 @@
 name: "Docker Hub Builder"
 description: "Build and push docker image"
 inputs:
+  dockerhub_username:
+    description: "Docker Hub username"
+    required: true
+  dockerhub_password:
+    description: "Docker Hub password"
+    required: true
   dockerfile:
     description: "Dockerfile to build and push"
     required: true
@@ -20,8 +26,8 @@ runs:
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DH_USER }}
-        password: ${{ secrets.DH_TOKEN }}
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_password }}
 
     - name: Build and push
       uses: docker/build-push-action@v3
