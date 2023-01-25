@@ -1,4 +1,4 @@
-FROM dbut2/butla/lengthener
+FROM dbut2/butla-lengthener
 
 ENV ENV="local"
 

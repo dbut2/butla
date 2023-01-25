@@ -1,4 +1,4 @@
-FROM dbut2/butla/web
+FROM dbut2/butla-web
 
 ENV ENV="local"
 
