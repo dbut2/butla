@@ -1,7 +1,0 @@
-lengthener:
-  address: ":8080"
-web:
-  address: ":8088"
-  host:
-    scheme: "http"
-    hostname: "localhost:8080"
