@@ -19,7 +19,7 @@ type Datastore struct {
 	wg     sync.WaitGroup
 }
 
-var _ store.Store = new(Datastore)
+var _ store.LinkStore = new(Datastore)
 
 func New(c *Config) (*Datastore, error) {
 	d := &Datastore{}
@@ -37,13 +37,13 @@ func New(c *Config) (*Datastore, error) {
 	return d, nil
 }
 
-func (d *Datastore) Set(ctx context.Context, link models.Link) error {
+func (d *Datastore) SetLink(ctx context.Context, link models.Link) error {
 	d.wg.Wait()
 	_, err := d.client.Put(ctx, datastore.NameKey("link", link.Code, nil), &link)
 	return err
 }
 
-func (d *Datastore) Get(ctx context.Context, code string) (models.Link, bool, error) {
+func (d *Datastore) GetLink(ctx context.Context, code string) (models.Link, bool, error) {
 	d.wg.Wait()
 	link := models.Link{}
 	err := d.client.Get(ctx, datastore.NameKey("link", code, nil), &link)

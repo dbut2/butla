@@ -19,7 +19,7 @@ type Redis struct {
 	client *redis.Client
 }
 
-var _ store.Store = new(Redis)
+var _ store.LinkStore = new(Redis)
 
 func New(c *Config) (*Redis, error) {
 	return &Redis{client: redis.NewClient(&redis.Options{
@@ -28,7 +28,7 @@ func New(c *Config) (*Redis, error) {
 	})}, nil
 }
 
-func (r Redis) Set(ctx context.Context, link models.Link) error {
+func (r Redis) SetLink(ctx context.Context, link models.Link) error {
 	expiry := time.Hour * 24 * 7
 	if link.Expiry.Valid {
 		expiry = time.Until(link.Expiry.Value)
@@ -36,7 +36,7 @@ func (r Redis) Set(ctx context.Context, link models.Link) error {
 	return r.client.Set(ctx, link.Code, link, expiry).Err()
 }
 
-func (r Redis) Get(ctx context.Context, code string) (models.Link, bool, error) {
+func (r Redis) GetLink(ctx context.Context, code string) (models.Link, bool, error) {
 	if r.client.Exists(ctx, code).Val() == 0 {
 		return models.Link{}, false, nil
 	}

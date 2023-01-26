@@ -21,12 +21,12 @@ type CacheConfig struct {
 	Redis *configs.Loader[*redis.Config] `yaml:"redis"`
 }
 
-func New(c *Config) (store.Store, error) {
+func New(c *Config) (store.LinkStore, error) {
 	if c == nil {
 		return inmem.InMem(), nil
 	}
 
-	var s store.Store
+	var s store.LinkStore
 
 	if c.Database != nil {
 		db, err := database.New(c.Database.Config)
@@ -65,4 +65,23 @@ func New(c *Config) (store.Store, error) {
 	}
 
 	return cs, nil
+}
+
+func NewUserStore(c *Config) (store.UserStore, error) {
+	if c == nil {
+		return inmem.InMem(), nil
+	}
+
+	var s store.UserStore
+
+	if c.Database != nil {
+		db, err := database.New(c.Database.Config)
+		if err != nil {
+			return nil, err
+		}
+
+		s = db
+	}
+
+	return s, nil
 }

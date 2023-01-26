@@ -10,3 +10,4 @@ store:
 cache:
   redis:
     host: "redis:6379"
+login: true

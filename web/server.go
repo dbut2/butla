@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dbut2/butla/pkg/auth"
 	"net/http"
 	"net/url"
 	"time"
@@ -18,10 +19,17 @@ type Server struct {
 	scheme    string
 	hostname  string
 	shortener shortener.Shortener
+	auth      auth.Auth
+	login     bool
 }
 
 func New(config *Config) (*Server, error) {
 	s, err := stores.New(config.Store)
+	if err != nil {
+		return nil, err
+	}
+
+	us, err := stores.NewUserStore(config.Store)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +43,8 @@ func New(config *Config) (*Server, error) {
 		scheme:    config.Host.Scheme,
 		hostname:  config.Host.Hostname,
 		shortener: shortener.New(s),
+		auth:      auth.New(us),
+		login:     config.LoginEnabled,
 	}, nil
 }
 
@@ -55,6 +65,12 @@ func (s *Server) Run() error {
 	})
 
 	r.POST("/shorten", s.shorten)
+
+	if s.login {
+		r.GET("/login", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "login.html", gin.H{})
+		})
+	}
 
 	return r.Run(s.address)
 }
