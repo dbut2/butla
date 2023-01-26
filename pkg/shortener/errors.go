@@ -6,7 +6,7 @@ import (
 
 var (
 	ErrUnspecified   = errors.New("unspecified")
-	ErrStore         = errors.New("store")
+	ErrStore         = errors.New("store error")
 	ErrAlreadyExists = errors.New("already exists")
 	ErrNotFound      = errors.New("not found")
 	ErrExpired       = errors.New("expired")

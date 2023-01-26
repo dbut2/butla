@@ -43,7 +43,7 @@ func main() {
 	}
 
 	for _, link := range links {
-		err = ds.Set(context.Background(), link)
+		err = ds.SetLink(context.Background(), link)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

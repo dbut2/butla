@@ -5,9 +5,10 @@ import (
 )
 
 type Config struct {
-	Address string         `yaml:"address"`
-	Host    host           `yaml:"host"`
-	Store   *stores.Config `yaml:"store"`
+	Address      string         `yaml:"address"`
+	Host         host           `yaml:"host"`
+	Store        *stores.Config `yaml:"store"`
+	LoginEnabled bool           `yaml:"login"`
 }
 
 type host struct {

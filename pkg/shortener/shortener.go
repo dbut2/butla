@@ -45,12 +45,12 @@ func WithIP(ip string) Metadata {
 }
 
 type shortener struct {
-	store store.Store
+	store store.LinkStore
 }
 
 var _ Shortener = new(shortener)
 
-func New(store store.Store) Shortener {
+func New(store store.LinkStore) Shortener {
 	return shortener{store: store}
 }
 
@@ -58,7 +58,7 @@ func (d shortener) Shorten(ctx context.Context, url string, metadata ...Metadata
 	var code string
 	for {
 		code = randomCode(6)
-		_, has, err := d.store.Get(ctx, code)
+		_, has, err := d.store.GetLink(ctx, code)
 		if err != nil {
 			log.Print(err.Error())
 			return models.Link{}, ErrStore
@@ -95,8 +95,9 @@ func (d shortener) ShortenCode(ctx context.Context, url string, code string, met
 		return models.Link{}, ErrUnspecified
 	}
 
-	_, has, err := d.store.Get(ctx, code)
+	_, has, err := d.store.GetLink(ctx, code)
 	if err != nil {
+		log.Print(err.Error())
 		return models.Link{}, ErrStore
 	}
 	if has {
@@ -110,7 +111,7 @@ func (d shortener) ShortenCode(ctx context.Context, url string, code string, met
 		IP:     md.ip,
 	}
 
-	err = d.store.Set(ctx, link)
+	err = d.store.SetLink(ctx, link)
 	if err != nil {
 		log.Print(err.Error())
 		return models.Link{}, ErrStore
@@ -125,8 +126,9 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 		md = m(md)
 	}
 
-	link, has, err := d.store.Get(ctx, code)
+	link, has, err := d.store.GetLink(ctx, code)
 	if err != nil {
+		log.Print(err.Error())
 		return models.Link{}, ErrStore
 	}
 	if !has {
