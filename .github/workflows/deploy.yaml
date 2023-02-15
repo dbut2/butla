@@ -31,7 +31,7 @@ jobs:
           docker push dbut2/shortener:${{ github.sha }}
 
       - name: Tag and Push latest
-        if: ${{ github.ref == 'refs/head/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           docker tag dbut2/shortener dbut2/shortener:latest
           docker push dbut2/shortener:latest
