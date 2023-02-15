@@ -6,43 +6,25 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./deployment/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   redis:
     image: redis
-  lengthener:
+    ports:
+      - 6379:6379
+  shortener:
     build:
-      dockerfile: lengthener/Dockerfile
+      context: shortener
     configs:
-      - lengthener.yaml
+      - config.yaml
     environment:
-      ENV: local
-      CONFIG_FILE: /lengthener.yaml
+      CONFIG_FILE: /config.yaml
     ports:
       - 8080:8080
     depends_on:
       - mysql
       - redis
     volumes:
-      - ./config/lengthener/local.yaml:/app/config.yaml
-      - ~/.config/gcloud:/root/.config/gcloud
-  web:
-    build:
-      dockerfile: web/Dockerfile
-    configs:
-      - web.yaml
-    environment:
-      ENV: local
-      CONFIG_FILE: /web.yaml
-    ports:
-      - 8088:8080
-    depends_on:
-      - mysql
-      - redis
-    volumes:
-      - ./config/web/local.yaml:/app/config.yaml
       - ~/.config/gcloud:/root/.config/gcloud
 configs:
-  lengthener.yaml:
-    file: deploy/lengthener/local.yaml
-  web.yaml:
-    file: deploy/web/local.yaml
+  config.yaml:
+    file: ./deployment/configs/local.yaml

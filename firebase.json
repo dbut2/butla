@@ -1,72 +1,36 @@
 {
   "hosting": [
     {
-      "site": "butla-web-test",
+      "site": "butla-test",
       "rewrites": [
         {
           "source": "**",
           "run": {
-            "serviceId": "web-test",
+            "serviceId": "shortener-test",
             "region": "australia-southeast1"
           }
         }
       ]
     },
     {
-      "site": "butla-web-dev",
+      "site": "butla-dev",
       "rewrites": [
         {
           "source": "**",
           "run": {
-            "serviceId": "web-dev",
+            "serviceId": "shortener-dev",
             "region": "australia-southeast1"
           }
         }
       ]
     },
     {
-      "site": "butla-web-prod",
+      "site": "butla-prod",
       "rewrites": [
         {
           "source": "**",
           "run": {
-            "serviceId": "web-prod",
-            "region": "australia-southeast1"
-          }
-        }
-      ]
-    },
-    {
-      "site": "butla-lengthener-test",
-      "rewrites": [
-        {
-          "source": "**",
-          "run": {
-            "serviceId": "lengthener-test",
-            "region": "australia-southeast1"
-          }
-        }
-      ]
-    },
-    {
-      "site": "butla-lengthener-dev",
-      "rewrites": [
-        {
-          "source": "**",
-          "run": {
-            "serviceId": "lengthener-dev",
-            "region": "australia-southeast1"
-          }
-        }
-      ]
-    },
-    {
-      "site": "butla-lengthener-prod",
-      "rewrites": [
-        {
-          "source": "**",
-          "run": {
-            "serviceId": "lengthener-prod",
+            "serviceId": "shortener-prod",
             "region": "australia-southeast1"
           }
         }
