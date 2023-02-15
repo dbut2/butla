@@ -36,6 +36,7 @@ jobs:
           docker tag dbut2/shortener dbut2/shortener:latest
           docker push dbut2/shortener:latest
 
+
   build-test:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
