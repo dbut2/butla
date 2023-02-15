@@ -3,6 +3,7 @@ package configs
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -36,6 +37,8 @@ func findBytes() ([]byte, error) {
 	if configFile := os.Getenv("CONFIG_FILE"); configFile != "" {
 		file = configFile
 	}
+
+	log.Printf("config: %s", file)
 
 	if _, err := os.Stat(file); err != nil {
 		return nil, errors.New("config file not found")
