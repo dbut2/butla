@@ -61,7 +61,7 @@ jobs:
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/test --build-arg ENV=test,BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/test --build-arg ENV=test --build_arg BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/test asia.gcr.io/but-la/shortener/test:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/test:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/test asia.gcr.io/but-la/shortener/test:latest
@@ -103,7 +103,7 @@ jobs:
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/dev --build-arg ENV=dev,BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/dev --build-arg ENV=dev --build_arg BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/dev asia.gcr.io/but-la/shortener/dev:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/dev:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/dev asia.gcr.io/but-la/shortener/dev:latest
@@ -145,7 +145,7 @@ jobs:
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/prod --build-arg ENV=prod,BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/prod --build-arg ENV=prod --build_art BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/prod asia.gcr.io/but-la/shortener/prod:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/prod:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/prod asia.gcr.io/but-la/shortener/prod:latest
