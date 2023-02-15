@@ -74,7 +74,7 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la
-          region: australia-southeast1
+          region: australia-southeast2
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
@@ -119,7 +119,7 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la
-          region: australia-southeast1
+          region: australia-southeast2
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
@@ -164,7 +164,7 @@ jobs:
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la
-          region: australia-southeast1
+          region: australia-southeast2
           secrets: |
             DATABASE=database-config:latest
             DATASTORE=datastore-config:latest
