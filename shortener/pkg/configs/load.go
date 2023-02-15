@@ -38,8 +38,6 @@ func findBytes() ([]byte, error) {
 		file = configFile
 	}
 
-	log.Printf("config: %s", file)
-
 	if _, err := os.Stat(file); err != nil {
 		return nil, errors.New("config file not found")
 	}
