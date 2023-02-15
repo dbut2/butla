@@ -37,8 +37,12 @@ jobs:
           docker push dbut2/shortener:latest
 
 
-  build-test:
+  env-test:
+    name: Build and Deploy TEST
     if: github.event_name == 'workflow_dispatch'
+    environment:
+      name: test
+      url: https://test.but.la/shorten
     runs-on: ubuntu-latest
     needs:
       - dh-build
@@ -52,35 +56,21 @@ jobs:
         uses: "google-github-actions/auth@v0"
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: 'access_token'
 
       - name: Login to gcr
         run: |
-          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://${{ env.IMAGE_HOST }}
+          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/test --build-arg ENV=test deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/test --build-arg ENV=test --build-arg BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/test asia.gcr.io/but-la/shortener/test:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/test:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/test asia.gcr.io/but-la/shortener/test:latest
           docker push asia.gcr.io/but-la/shortener/test:latest
 
-  deploy-test:
-    runs-on: ubuntu-latest
-    needs:
-      - build-test
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: gcloud Auth
-        id: auth
-        uses: "google-github-actions/auth@v0"
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: "deploy"
+      - name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la
@@ -92,8 +82,12 @@ jobs:
           service: shortener-test
           image: asia.gcr.io/but-la/shortener/test:${{ github.sha }}
 
-  build-dev:
+  env-dev:
+    name: Build and Deploy DEV
     if: github.ref == 'refs/heads/main'
+    environment:
+      name: dev
+      url: https://dev.but.la/shorten
     runs-on: ubuntu-latest
     needs:
       - dh-build
@@ -107,35 +101,21 @@ jobs:
         uses: "google-github-actions/auth@v0"
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: 'access_token'
 
       - name: Login to gcr
         run: |
-          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://${{ env.IMAGE_HOST }}
+          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/dev --build-arg ENV=test deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/dev --build-arg ENV=dev --build-arg BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/dev asia.gcr.io/but-la/shortener/dev:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/dev:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/dev asia.gcr.io/but-la/shortener/dev:latest
           docker push asia.gcr.io/but-la/shortener/dev:latest
 
-  deploy-dev:
-    runs-on: ubuntu-latest
-    needs:
-      - build-dev
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: gcloud Auth
-        id: auth
-        uses: "google-github-actions/auth@v0"
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: "deploy"
+      - name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la
@@ -147,11 +127,15 @@ jobs:
           service: shortener-dev
           image: asia.gcr.io/but-la/shortener/dev:${{ github.sha }}
 
-  build-prod:
+  env-prod:
+    name: Build and Deploy PROD
+    environment:
+      name: prod
+      url: https://but.la/shorten
     runs-on: ubuntu-latest
     needs:
       - dh-build
-      - deploy-dev
+      - env-dev
 
     steps:
       - name: Checkout
@@ -162,35 +146,21 @@ jobs:
         uses: "google-github-actions/auth@v0"
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+          token_format: 'access_token'
 
       - name: Login to gcr
         run: |
-          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://${{ env.IMAGE_HOST }}
+          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
 
       - name: Build and Push
         run: |
-          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/prod --build-arg ENV=test deployment
+          docker build -f deployment/Dockerfile -t asia.gcr.io/but-la/shortener/prod --build-arg ENV=prod --build-arg BASE_IMAGE=dbut2/shortener:${{ github.sha }} deployment
           docker tag asia.gcr.io/but-la/shortener/prod asia.gcr.io/but-la/shortener/prod:${{ github.sha }}
           docker push asia.gcr.io/but-la/shortener/prod:${{ github.sha }}
           docker tag asia.gcr.io/but-la/shortener/prod asia.gcr.io/but-la/shortener/prod:latest
           docker push asia.gcr.io/but-la/shortener/prod:latest
 
-  deploy-prod:
-    runs-on: ubuntu-latest
-    needs:
-      - build-prod
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: gcloud Auth
-        id: auth
-        uses: "google-github-actions/auth@v0"
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - id: "deploy"
+      - name: Deploy
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
           project_id: but-la

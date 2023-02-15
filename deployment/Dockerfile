@@ -6,4 +6,4 @@ WORKDIR /app
 ARG ENV=local
 COPY ./configs/${ENV}.yaml ./config.yaml
 
-CMD ["./lengthener"]
+CMD ["./shortener"]
