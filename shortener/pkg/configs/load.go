@@ -3,7 +3,6 @@ package configs
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
