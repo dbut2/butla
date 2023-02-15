@@ -1,4 +1,0 @@
-database:
-  secret: projects/540755457828/secrets/database-config/versions/latest
-datastore:
-  secret: projects/540755457828/secrets/datastore-config/versions/latest

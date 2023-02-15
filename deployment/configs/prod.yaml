@@ -1,0 +1,7 @@
+address: ":8080"
+store:
+  datastore:
+    env: DATASTORE
+host:
+  scheme: "https"
+  hostname: "but.la"
