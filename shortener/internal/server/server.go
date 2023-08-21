@@ -112,9 +112,12 @@ func (s *Server) shorten(c *gin.Context) {
 		u.Scheme = "https"
 	}
 
-	ip := c.GetHeader("X-Forwarded-For")
+	ips := c.ClientIP()
+	if xff := c.GetHeader("X-Forwarded-For"); xff != "" {
+		ips += "," + xff
+	}
 
-	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(ip))
+	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(ips))
 	if err != nil {
 		switch err {
 		case shortener.ErrAlreadyExists:
