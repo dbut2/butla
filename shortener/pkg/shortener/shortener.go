@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"log"
 	"math/big"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/dbut2/butla/shortener/pkg/models"
@@ -139,8 +141,14 @@ func (d shortener) Lengthen(ctx context.Context, code string, metadata ...Metada
 		return models.Link{}, ErrExpired
 	}
 
-	if link.IP.Valid && (!md.ip.Valid || link.IP.Value != md.ip.Value) {
-		return models.Link{}, ErrInvalidIP
+	if link.IP.Valid {
+		if !md.ip.Valid {
+			return models.Link{}, ErrInvalidIP
+		}
+
+		if !slices.Contains(strings.Split(link.IP.Value, ","), md.ip.Value) {
+			return models.Link{}, ErrInvalidIP
+		}
 	}
 
 	return link, nil
