@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/dbut2/butla/shortener/internal/pages"
@@ -113,10 +112,12 @@ func (s *Server) shorten(c *gin.Context) {
 		u.Scheme = "https"
 	}
 
-	ips := strings.Split(c.GetHeader("X-Forwarded-For"), ",")
-	ip := ips[0]
+	ips := c.ClientIP()
+	if xff := c.GetHeader("X-Forwarded-For"); xff != "" {
+		ips += "," + xff
+	}
 
-	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(ip))
+	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(ips))
 	if err != nil {
 		switch err {
 		case shortener.ErrAlreadyExists:
