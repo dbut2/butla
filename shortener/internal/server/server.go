@@ -112,7 +112,9 @@ func (s *Server) shorten(c *gin.Context) {
 		u.Scheme = "https"
 	}
 
-	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(c.ClientIP()))
+	ip := c.GetHeader("X-Forwarded-For")
+
+	link, err := s.shortener.Shorten(c, u.String(), shortener.WithExpiry(time.Now().Add(time.Minute*10)), shortener.WithIP(ip))
 	if err != nil {
 		switch err {
 		case shortener.ErrAlreadyExists:
