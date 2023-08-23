@@ -11,7 +11,7 @@ cloud.google.com/go/compute/internal
 # cloud.google.com/go/compute/metadata v0.2.3
 ## explicit; go 1.19
 cloud.google.com/go/compute/metadata
-# cloud.google.com/go/datastore v1.13.0
+# cloud.google.com/go/datastore v1.14.0
 ## explicit; go 1.19
 cloud.google.com/go/datastore
 cloud.google.com/go/datastore/internal
@@ -314,7 +314,7 @@ google.golang.org/appengine/internal/socket
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/socket
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20230815205213-6bfd019c3878
+# google.golang.org/genproto v0.0.0-20230821184602-ccc8af3d0e93
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/datastore/v1
 google.golang.org/genproto/googleapis/type/expr
