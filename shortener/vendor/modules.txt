@@ -11,7 +11,7 @@ cloud.google.com/go/compute/internal
 # cloud.google.com/go/compute/metadata v0.2.3
 ## explicit; go 1.19
 cloud.google.com/go/compute/metadata
-# cloud.google.com/go/datastore v1.14.0
+# cloud.google.com/go/datastore v1.15.0
 ## explicit; go 1.19
 cloud.google.com/go/datastore
 cloud.google.com/go/datastore/internal
