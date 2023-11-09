@@ -20,6 +20,8 @@ jobs:
         uses: dbut2/technical-writer@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          allow_list: deployment,shortener
+          deny_list: vendor
 
       - name: Refresh git
         run: |
