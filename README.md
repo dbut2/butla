@@ -1,77 +1,77 @@
-# Shortener
+# Shortener Service
 
-Shortener is a simple URL shortening service written in Go. It provides the ability to create short, memorable links that redirect to longer URLs.
+## Overview
 
-## Prerequisites
+The Shortener Service is a URL shortening service with the capability to create shortened URLs (links) and redirect from a short link to the original URL. It also supports user registration and authentication for managing links.
 
-To run Shortener, ensure you have the following installed:
-- Go (version 1.21 or newer)
-- Docker (optional)
+## Service Components
 
-The application also requires access to a database. The provided `schema.sql` file includes the SQL schema that is compatible with MySQL.
-
-## Building
-
-### Manually
-
-1. Navigate to the `shortener` directory.
-2. Run the Go build command:
-    ```bash
-    go build -o shortener ./cmd/shortener
-    ```
-3. The `shortener` binary will be created in the current directory.
-
-### Using Docker
-
-1. Navigate to the root directory of the project.
-2. Build the Docker image with the following command:
-    ```bash
-    docker build -t shortener -f deployment/Dockerfile .
-    ```
-3. The Docker image tagged as `shortener` will be created.
+- **Shortener**: Provides functionalities to shorten long URLs, manage and retrieve the shortened links, handles the short link redirection to the original URL, and ensures the links may expire after a certain time or restricted based on the requester's IP.
+- **Auth**: Handles user registration and authentication services.
+- **Server**: Powers the HTTP server that exposes endpoints for the services provided by the application and serves the related web pages for user interaction.
 
 ## Configuration
 
-The application can be configured using the `yaml` files located in the `deployment/configs/` directory. It supports environment-specific configurations:
+The service can be configured using YAML configuration files. Configuration files for different environments (local, development, production, and test) can be found in the `deployment/configs/` directory:
 
-- `prod.yaml` for production
-- `test.yaml` for testing
-- `dev.yaml` for development
-- `local.yaml` for local development
+- `local.yaml` - Configuration for local development setup.
+- `dev.yaml` - Configuration for the development environment.
+- `prod.yaml` - Configuration for the production environment.
+- `test.yaml` - Configuration for the test environment.
 
-Adjust the configurations as needed for your environment, such as database credentials, datastore identifiers, or cache settings.
+The service can be customized by editing the respective environment's configuration file or setting the `ENV` or `CONFIG_FILE` environment variables to point to a custom configuration file.
 
-## Running
+### Configuration Parameters
 
-### Manually
-
-Execute the built binary with the following command:
-```bash
-./shortener
-```
-
-You can set the `ENV` environment variable to load specific configurations:
-```bash
-ENV=local ./shortener
-```
-
-### Using Docker
-
-1. Run the Docker image with the following command:
-    ```bash
-    docker run -p 8080:8080 -e ENV=local shortener
-    ```
-2. The application will be accessible on port `8080`.
-
-## Deployment
-
-Refer to the provided `Dockerfile` in `deployment/` directory for deployment configurations. Update it as necessary to use your base image and desired environment.
+- `address`: The address the server listens on.
+- `store`: Specifies the type and configuration for the storage mechanism used for persisting links and users.
+  - `database`: Parameters for the database connectivity.
+  - `datastore`: Parameters for Google Cloud Datastore configuration.
+  - `cache`: Configuration for caching layer (using Redis).
+- `host`: Details about the hostname and scheme.
 
 ## Database Schema
 
-To set up your database, use the `schema.sql` file located in the `deployment/` directory. This file contains the SQL commands to create the necessary tables and sample data.
+Database `shortener`, which contains two main tables:
 
-## License
+- **links**: Stores the short links created by the service.
+- **users**: Stores the user accounts for the authorization and management of links.
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+The schema definition can be found in `deployment/database/schema.sql`. It includes the table creation statements and initial data setup.
+
+## Deployment
+
+The service is containerized using Docker. The `Dockerfile` in the `deployment/` directory can be used to build the service image. The image build process contains the following stages:
+
+1. Building the Go application from source.
+2. Copying the built application into a clean image for deployment.
+
+Set the `ENV` variable during the build or run phase to customize the environment settings for the container.
+
+## Running the Service
+
+Execute the following command to start the service using Docker:
+
+```sh
+docker build -t shortener-service . -f deployment/Dockerfile
+docker run -p 8080:8080 -e ENV=prod shortener-service
 ```
+
+Replace `prod` with your desired environment (`local`, `dev`, `test`, or path to your custom configuration YAML).
+
+Once the service is running, access it via the configured hostname, or `localhost:8080` if running locally.
+
+## API Endpoints
+
+- `GET /shorten`: Serves the page to create a shortened URL.
+- `POST /shorten`: API endpoint to create a shortened URL.
+- `GET /`: Redirects to the default link if set.
+- `GET /{code}`: Redirects to the original URL corresponding to the given `code`.
+
+## User Registration and Authentication
+
+User registration and authentication functionalities are available through the Auth interface but are not exposed via the HTTP server in the current implementation. To utilize these functionalities, additional endpoints should be implemented in the server component.
+
+---
+
+This README is part of the technical documentation for the Shortener Service.
