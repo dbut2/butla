@@ -1,77 +1,64 @@
-# Shortener
+# Shortener Service
 
-Shortener is a simple URL shortening service written in Go. It provides the ability to create short, memorable links that redirect to longer URLs.
+This service provides functionality to shorten URLs and manage shortened URL redirection. 
 
-## Prerequisites
+## Getting Started
 
-To run Shortener, ensure you have the following installed:
-- Go (version 1.21 or newer)
-- Docker (optional)
+### Prerequisites
 
-The application also requires access to a database. The provided `schema.sql` file includes the SQL schema that is compatible with MySQL.
+- Go 1.21
+- MySQL (for persistent storage)
+- Redis (for caching layer)
+- Docker (for containerization and deployment)
 
-## Building
+### Configuration
 
-### Manually
+The service can be configured using a YAML configuration file. Example files for different environments are provided in the `deployment/configs/` directory. Customize the `local.yaml` file for local development or create a new configuration for your environment.
 
-1. Navigate to the `shortener` directory.
-2. Run the Go build command:
-    ```bash
-    go build -o shortener ./cmd/shortener
-    ```
-3. The `shortener` binary will be created in the current directory.
+### Running Locally
 
-### Using Docker
+For local development, ensure that the MySQL and Redis instances are accessible and the `local.yaml` configuration file has the correct connection details.
 
-1. Navigate to the root directory of the project.
-2. Build the Docker image with the following command:
-    ```bash
-    docker build -t shortener -f deployment/Dockerfile .
-    ```
-3. The Docker image tagged as `shortener` will be created.
+### Building the Service
 
-## Configuration
+You can use the provided `Dockerfile` in the `deployment` directory to build the service:
 
-The application can be configured using the `yaml` files located in the `deployment/configs/` directory. It supports environment-specific configurations:
-
-- `prod.yaml` for production
-- `test.yaml` for testing
-- `dev.yaml` for development
-- `local.yaml` for local development
-
-Adjust the configurations as needed for your environment, such as database credentials, datastore identifiers, or cache settings.
-
-## Running
-
-### Manually
-
-Execute the built binary with the following command:
-```bash
-./shortener
+```sh
+cd deployment
+docker build -t shortener .
 ```
 
-You can set the `ENV` environment variable to load specific configurations:
-```bash
-ENV=local ./shortener
+### Running the Service
+
+To run the built Docker image:
+
+```sh
+docker run -p 8080:8080 shortener
 ```
 
-### Using Docker
+The API will be available at `http://localhost:8080`.
 
-1. Run the Docker image with the following command:
-    ```bash
-    docker run -p 8080:8080 -e ENV=local shortener
-    ```
-2. The application will be accessible on port `8080`.
+## API Endpoints
 
-## Deployment
-
-Refer to the provided `Dockerfile` in `deployment/` directory for deployment configurations. Update it as necessary to use your base image and desired environment.
+- `GET /`: Redirects to the default shortened URL.
+- `GET /:code`: Given a shortened code, it redirects to the original URL if valid and not expired.
+- `POST /shorten`: Shortens a given URL.
 
 ## Database Schema
 
-To set up your database, use the `schema.sql` file located in the `deployment/` directory. This file contains the SQL commands to create the necessary tables and sample data.
+The MySQL database schema can be found in `deployment/database/schema.sql`. This must be applied to the MySQL instance before starting the service.
+
+## Deployment
+
+Modify and use the Dockerfile and Kubernetes configuration files from the `deployment` directory for deploying the service to your preferred environment.
+
+## Contributing
+
+Please submit any bugs or feature requests as issues on the repository.
+
+For contributing code, fork the repository, make your changes, and open a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+Specify the license under which the project is made available.
 ```
