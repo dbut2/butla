@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "site": "dbut-home",
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "home",
+          "region": "australia-southeast2"
+        }
+      }
+    ]
+  }
+}
