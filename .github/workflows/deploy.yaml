@@ -1,13 +1,12 @@
 name: Deploy
+
 on:
   push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, dub]
+    runs-on: [self-hosted]
     steps:
-      - uses: actions/checkout@v4
       - run: |
-          docker compose up --build --detach --force-recreate --remove-orphans                    
+          whoami
