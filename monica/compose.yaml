@@ -1,0 +1,44 @@
+services:
+  app:
+    image: monica
+    depends_on:
+      - db
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.monica.rule=Host(`monica.dbut.dev`)"
+    networks:
+      - web
+      - monica
+    environment:
+      - APP_KEY=base64:V7v5YWmQS1nXvWCagRPc4hAEk8xrzNkZQKHJRXD3Keo=
+      - DB_HOST=db
+      - DB_USERNAME=monica
+      - DB_PASSWORD=secret
+    volumes:
+      - data:/var/www/html/storage
+    restart: always
+
+  db:
+    image: mariadb:11
+    networks:
+      - monica
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_DATABASE=monica
+      - MYSQL_USER=monica
+      - MYSQL_PASSWORD=secret
+    volumes:
+      - mysql:/var/lib/mysql
+    restart: always
+
+volumes:
+  data:
+    name: data
+  mysql:
+    name: mysql
+
+networks:
+  monica:
+    driver: bridge
+  web:
+    external: true
