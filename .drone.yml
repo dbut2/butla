@@ -1,9 +1,0 @@
-kind: pipeline
-type: docker
-name: default
-
-steps:
-  - name: deploy
-    image: ubuntu
-    commands:
-      - docker compose up --build --force-recreate --detach --remove-orphans
