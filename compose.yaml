@@ -57,9 +57,8 @@ services:
       - db
     labels:
       - "traefik.docker.network=web"
-      - "traefik.http.routers.ghost.rule=Host(`ghost.dbut.dev`, `but.la`, `dylanbutler.dev`)"
-      - "traefik.http.routers.ghost.priority=10"
-      - "traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Host=but.la"
+      - "traefik.http.routers.ghost.rule=Host(`dylanbutler.dev`)"
+      - "traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Host=dylanbutler.dev"
       - "traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.ghost.middlewares=ghost-headers"
     environment:
@@ -154,9 +153,10 @@ services:
     image: shlinkio/shlink:stable
     container_name: shlink
     environment:
-      DEFAULT_DOMAIN: "but.la/s"
+      DEFAULT_DOMAIN: "but.la"
       DEFAULT_BASE_URL_REDIRECT: "https://dylanbutler.dev"
       DEFAULT_SHORT_CODES_LENGTH: 4
+      REDIRECT_APPEND_EXTRA_PATH: true
       IS_HTTPS_ENABLED: true
       #      GEOLITE_LICENSE_KEY: your_geolite_license_key  # Replace with your actual GeoLite license key
       DB_DRIVER: mysql
@@ -166,10 +166,7 @@ services:
       DB_HOST: db            # Using the existing db service
     labels:
       - "traefik.docker.network=web"
-      - "traefik.http.routers.shlink.rule=Host(`but.la`) && PathPrefix(`/s`)"
-      - "traefik.http.routers.shlink.priority=20"
-      - "traefik.http.routers.shlink.middlewares=shlink-stripprefix"
-      - "traefik.http.middlewares.shlink-stripprefix.stripprefix.prefixes=/s"
+      - "traefik.http.routers.shlink.rule=Host(`but.la`)"
     networks:
       - web
       - db
