@@ -166,7 +166,7 @@ services:
       DB_HOST: db            # Using the existing db service
     labels:
       - "traefik.docker.network=web"
-      - "traefik.http.routers.shlink.rule=Host(`but.la`)"
+      - "traefik.http.routers.shlink.rule=Host(`but.la`, `dbut.dev`)"
     networks:
       - web
       - db
