@@ -12,3 +12,4 @@ jobs:
       - run: |
           CLOUDFLARE_TUNNEL_TOKEN=${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }} docker compose up --build --detach --remove-orphans
           docker compose -f monica/compose.yaml up --detach --remove-orphans
+          docker compose -f wordpress/compose.yaml up --detach --remove-orphans
