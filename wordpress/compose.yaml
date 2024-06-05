@@ -23,6 +23,9 @@ services:
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.routers.wordpress.rule=Host(`wordpress.dbut.dev`)"
+      - "traefik.http.middlewares.wordpress-headers.headers.customrequestheaders.X-Forwarded-Host=wordpress.dbut.dev"
+      - "traefik.http.middlewares.wordpress-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.wordpress.middlewares=wordpress-headers"
     volumes:
       - wp_data:/var/www/html
     networks:
