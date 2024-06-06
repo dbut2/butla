@@ -107,7 +107,7 @@ services:
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.dbut.dev`)"
-      - "traefik.http.routers.jellyfin-local.rule=Host(`dub.local`) && PathPrefix(`/jellyfin`)"
+      - "traefik.http.routers.jellyfin-local.rule=Host(`dub.lan`) && PathPrefix(`/jellyfin`)"
     networks:
       - web
     volumes:
