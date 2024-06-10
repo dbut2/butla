@@ -15,23 +15,27 @@ services:
     container_name: traefik
     image: traefik:v2.5
     ports:
-      - "80:80"
-      - "8080:8080"
+      - "443:8443"
     command:
       - "--providers.docker=true"
+      - "--providers.file.filename=/etc/traefik/traefik_dynamic.yaml"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.local.address=:8443"
       - "--entrypoints.traefik.address=:8080"
       - "--api.dashboard=true"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock" # So that Traefik can listen to the Docker events
+      - "/root/ghq/github.com/dbutlabs/home/traefik_dynamic.yaml:/etc/traefik/traefik_dynamic.yaml"
+      - "/etc/letsencrypt/live:/certs/live"
+      - "/etc/letsencrypt/archive:/certs/archive"
     networks:
       - ingress
       - web
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.dashboard.entrypoints=web"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.dbut.dev`)"
       - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=traefik"
     restart: always
 
   uptime-kuma:
@@ -40,6 +44,8 @@ services:
     networks:
       - web
     labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.uptime-kuma.entrypoints=web"
       - "traefik.http.routers.uptime-kuma.rule=Host(`status.dbut.dev`)"
     volumes:
       - $HOME/ghq/ssh.dbut.dev/dbut/home/uptime-kuma-data:/app/data
@@ -55,6 +61,7 @@ services:
       - db
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.ghost.entrypoints=web"
       - "traefik.http.routers.ghost.rule=Host(`dylanbutler.dev`)"
       - "traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Host=dylanbutler.dev"
       - "traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
@@ -75,7 +82,7 @@ services:
       mail__options__auth__user: ${APPLE_EMAIL_USERNAME}
       mail__options__auth__pass: ${APPLE_EMAIL_PASSWORD}
     volumes:
-      - $HOME/ghq/ssh.dbut.dev/dbut/home/ghost/ghost:/var/lib/ghost/content
+      - /root/ghq/ssh.dbut.dev/dbut/home/ghost/ghost:/var/lib/ghost/content
 
   db:
     image: mysql:8.0
@@ -96,7 +103,9 @@ services:
       - web
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.portainer.entrypoints=local"
       - "traefik.http.routers.portainer.rule=Host(`portainer.dbut.dev`)"
+      - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -108,23 +117,35 @@ services:
     container_name: jellyfin
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.dbut.dev`)"
-      - "traefik.http.routers.jellyfin-local.rule=Host(`dub.lan`) && PathPrefix(`/jellyfin`)"
+      - "traefik.http.routers.jellyfins.entrypoints=local"
+      - "traefik.http.routers.jellyfins.rule=Host(`jellyfin.dbut.dev`)"
+      - "traefik.http.routers.jellyfins.tls=true"
     networks:
       - web
     volumes:
-      - $HOME/ghq/ssh.dbut.dev/dbut/home/config:/config
-      - $HOME/ghq/ssh.dbut.dev/dbut/home/cache:/cache
+      - /root/ghq/ssh.dbut.dev/dbut/home/config:/config
+      - /root/ghq/ssh.dbut.dev/dbut/home/cache:/cache
       - /media:/media
       - /mnt/windows/Movies:/media/windows
       - /mnt/windows/Shows:/media/shows
+    restart: unless-stopped
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
 
   transmission:
     image: lscr.io/linuxserver/transmission:latest
     container_name: transmission
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.transmission.entrypoints=local"
       - "traefik.http.routers.transmission.rule=Host(`transmission.dbut.dev`)"
+      - "traefik.http.routers.transmission.tls=true"
     networks:
       - web
     environment:
@@ -134,6 +155,7 @@ services:
     volumes:
       - /mnt/windows/Movies:/media/movies
       - /mnt/windows/Shows:/media/shows
+      - /mnt/nvme1/transmission:/downloads
     restart: unless-stopped
 
   watchtower:
@@ -147,6 +169,7 @@ services:
     container_name: openspeedtest
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.speedtest.entrypoints=web"
       - "traefik.http.routers.speedtest.rule=Host(`speedtest.dbut.dev`)"
     networks:
       - web
@@ -169,6 +192,7 @@ services:
       DB_HOST: db            # Using the existing db service
     labels:
       - "traefik.docker.network=web"
+      - "traefik.http.routers.shlink.entrypoints=web"
       - "traefik.http.routers.shlink.rule=Host(`but.la`, `dbut.dev`)"
     networks:
       - web
@@ -176,6 +200,44 @@ services:
     depends_on:
       - db
     restart: always
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.pihole.entrypoints=local"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.dbut.dev`)"
+      - "traefik.http.routers.pihole.tls=true"
+      - "traefik.http.routers.ph.entrypoints=web"
+      - "traefik.http.routers.ph.rule=Host(`pihole.dbut.dev`)"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    networks:
+      - web
+    environment:
+      TZ: 'Australia/Melbourne'
+    volumes:
+      - '/root/ghq/ssh.dbut.dev/dbut/home/pihole/etc-pihole:/etc/pihole'
+      - '/root/ghq/ssh.dbut.dev/dbut/home/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+    restart: unless-stopped
+
+  home:
+    build:
+      context: home
+      dockerfile: Dockerfile
+    networks:
+      - web
+      - ingress
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.home.entrypoints=web"
+      - "traefik.http.routers.home.rule=Host(`home.dbut.dev`)"
+      - "traefik.http.routers.homes.entrypoints=local"
+      - "traefik.http.routers.homes.rule=Host(`home.dbut.dev`)"
+      - "traefik.http.routers.homes.tls=true"
 
 networks:
   ingress:
