@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: slategrey;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+        }
+        .card {
+            width: 100%;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        code {
+            background-color: #eceff1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card hoverable">
+        <div class="card-content">
+            <span class="card-title">{{.Message}}</span>
+            <p>{{.Explanation}}</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

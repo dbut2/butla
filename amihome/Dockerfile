@@ -3,7 +3,10 @@ FROM golang:alpine AS builder
 WORKDIR /app
 
 COPY go.mod go.mod
+
 COPY main.go main.go
+
+COPY templates/ templates/
 
 RUN go build -o /app/main
 
