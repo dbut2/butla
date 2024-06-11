@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.uptime-kuma.entrypoints=web"
       - "traefik.http.routers.uptime-kuma.rule=Host(`status.dbut.dev`)"
     volumes:
-      - $HOME/ghq/ssh.dbut.dev/dbut/home/uptime-kuma-data:/app/data
+      - /root/ghq/ssh.dbut.dev/dbut/home/uptime-kuma-data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
@@ -93,7 +93,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
-      - $HOME/ghq/ssh.dbut.dev/dbut/home/ghost/db:/var/lib/mysql
+      - /root/ghq/ssh.dbut.dev/dbut/home/ghost/db:/var/lib/mysql
 
   portainer:
     image: portainer/portainer-ce:alpine
@@ -109,7 +109,7 @@ services:
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "$HOME/ghq/ssh.dbut.dev/dbut/home/portainer:/data"
+      - "/root/ghq/ssh.dbut.dev/dbut/home/portainer:/data"
     restart: always
 
   jellyfin:
