@@ -171,6 +171,9 @@ services:
       - "traefik.docker.network=web"
       - "traefik.http.routers.speedtest.entrypoints=web"
       - "traefik.http.routers.speedtest.rule=Host(`speedtest.dbut.dev`)"
+      - "traefik.http.routers.speedtests.entrypoints=local"
+      - "traefik.http.routers.speedtests.rule=Host(`speedtest.dbut.dev`)"
+      - "traefik.http.routers.speedtests.tls=true"
     networks:
       - web
     image: openspeedtest/latest
