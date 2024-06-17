@@ -24,7 +24,7 @@ services:
       - "--entrypoints.traefik.address=:8080"
       - "--api.dashboard=true"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock" # So that Traefik can listen to the Docker events
+      - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/ghq/github.com/dbutlabs/home/traefik_dynamic.yaml:/etc/traefik/traefik_dynamic.yaml"
       - "/etc/letsencrypt/live:/certs/live"
       - "/etc/letsencrypt/archive:/certs/archive"
@@ -161,6 +161,9 @@ services:
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
+    environment:
+      TZ: "Australia/Melbourne"
+      WATCHTOWER_SCHEDULE: "* */10 * * * *"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
@@ -187,12 +190,11 @@ services:
       DEFAULT_SHORT_CODES_LENGTH: 4
       REDIRECT_APPEND_EXTRA_PATH: true
       IS_HTTPS_ENABLED: true
-      #      GEOLITE_LICENSE_KEY: your_geolite_license_key  # Replace with your actual GeoLite license key
       DB_DRIVER: mysql
-      DB_NAME: shlink_db     # Name of the database to be used by Shlink
-      DB_USER: root          # Since you use root for other services, or you can use another user
-      DB_PASSWORD: password  # Password for the database
-      DB_HOST: db            # Using the existing db service
+      DB_NAME: shlink_db
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_HOST: db
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.routers.shlink.entrypoints=web"
@@ -239,6 +241,8 @@ services:
       - "traefik.http.routers.homes.entrypoints=local"
       - "traefik.http.routers.homes.rule=Host(`amihome.dbut.dev`)"
       - "traefik.http.routers.homes.tls=true"
+
+
 
 networks:
   ingress:
