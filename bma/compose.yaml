@@ -18,6 +18,7 @@ services:
   wordpress:
     image: wordpress:latest
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.bma.rule=Host(`billiesmacoadventure.com`) || Host(`bma.dbut.dev`)"
       - "traefik.http.middlewares.bma-headers.headers.customrequestheaders.X-Forwarded-Host=billiesmacoadventure.com"

@@ -4,6 +4,7 @@ services:
     depends_on:
       - db
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.monica.rule=Host(`monica.dbut.dev`)"
     networks:

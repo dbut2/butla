@@ -18,6 +18,7 @@ services:
       - "443:8443"
     command:
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:443"
       - "--entrypoints.web.http.tls.certresolver=r"
       - "--entrypoints.web.http.tls.domains[0].main=dbut.dev"
@@ -42,6 +43,7 @@ services:
       - ingress
       - web
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.dashboard.entrypoints=web"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.dbut.dev`)"
@@ -57,6 +59,7 @@ services:
     networks:
       - web
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.uptime-kuma.entrypoints=web"
       - "traefik.http.routers.uptime-kuma.rule=Host(`status.dbut.dev`)"
@@ -73,6 +76,7 @@ services:
       - ghost
       - db
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.ghost.entrypoints=web"
       - "traefik.http.routers.ghost.rule=Host(`dylanbutler.dev`)"
@@ -115,6 +119,7 @@ services:
     networks:
       - web
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.portainer.entrypoints=local"
       - "traefik.http.routers.portainer.rule=Host(`portainer.dbut.dev`)"
@@ -128,6 +133,7 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.dbut.dev`)"
@@ -153,6 +159,7 @@ services:
     image: lscr.io/linuxserver/transmission:latest
     container_name: transmission
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.transmission.entrypoints=local"
       - "traefik.http.routers.transmission.rule=Host(`transmission.dbut.dev`)"
@@ -181,6 +188,7 @@ services:
     restart: unless-stopped
     container_name: openspeedtest
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.speedtest.entrypoints=web"
       - "traefik.http.routers.speedtest.rule=Host(`speedtest.dbut.dev`)"
@@ -205,6 +213,7 @@ services:
       DB_PASSWORD: password
       DB_HOST: db
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.shlink.entrypoints=web"
       - "traefik.http.routers.shlink.rule=Host(`but.la`) || Host(`dbut.dev`)"
@@ -222,6 +231,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.pihole.entrypoints=local"
       - "traefik.http.routers.pihole.rule=Host(`pihole.dbut.dev`)"
@@ -243,6 +253,7 @@ services:
       - web
       - ingress
     labels:
+      - "traefik.enable=true"
       - "traefik.docker.network=web"
       - "traefik.http.routers.home.entrypoints=web"
       - "traefik.http.routers.home.rule=Host(`amihome.dbut.dev`)"
