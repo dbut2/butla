@@ -12,6 +12,7 @@ jobs:
       - run: |
           docker compose -f compose.yaml up --build --detach --remove-orphans
           docker compose -f bma/compose.yaml up --build --detach --remove-orphans
+          docker compose -f jamesblewis/compose.yaml up --build --detach --remove-orphans
           docker compose -f monica/compose.yaml up --build --detach --remove-orphans
           docker compose -f wordpress/compose.yaml up --build --detach --remove-orphans
         env:

@@ -1,0 +1,19 @@
+services:
+  scheduler:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis #todo
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo '* * * * * docker compose -f /jamesblewis/compose.yaml run example-service' >> /etc/crontabs/root
+        crond -f -d 8
+
+  example-service:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - ps
