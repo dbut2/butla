@@ -55,7 +55,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
-      - "traefik.http.routers.dashboard.entrypoints=web"
+      - "traefik.http.routers.dashboard.entrypoints=local"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.dbut.dev`)"
       - "traefik.http.routers.dashboard.service=api@internal"
     restart: always

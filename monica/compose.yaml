@@ -4,17 +4,18 @@ services:
     depends_on:
       - db
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=web"
-      - "traefik.http.routers.monica.rule=Host(`monica.dbut.dev`)"
+      traefik.enable: "true"
+      traefik.docker.network: "web"
+      traefik.http.routers.bma.entrypoints: "local"
+      traefik.http.routers.monica.rule: "Host(`monica.dbut.dev`)"
     networks:
-      - web
-      - monica
+      web:
+      monica:
     environment:
-      - APP_KEY=base64:V7v5YWmQS1nXvWCagRPc4hAEk8xrzNkZQKHJRXD3Keo=
-      - DB_HOST=db
-      - DB_USERNAME=monica
-      - DB_PASSWORD=secret
+      APP_KEY: 'base64:V7v5YWmQS1nXvWCagRPc4hAEk8xrzNkZQKHJRXD3Keo="
+      DB_HOST: "db"
+      DB_USERNAME: "monica"
+      DB_PASSWORD: "secret"
     volumes:
       - data:/var/www/html/storage
     restart: always

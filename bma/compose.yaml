@@ -15,26 +15,28 @@ services:
     expose:
       - 3306
       - 33060
+
   wordpress:
     image: wordpress:latest
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=web"
-      - "traefik.http.routers.bma.rule=Host(`billiesmacoadventure.com`) || Host(`bma.dbut.dev`)"
-      - "traefik.http.middlewares.bma-headers.headers.customrequestheaders.X-Forwarded-Host=billiesmacoadventure.com"
-      - "traefik.http.middlewares.bma-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.bma.middlewares=bma-headers"
+      traefik.enable: "true"
+      traefik.docker.network: "web"
+      traefik.http.routers.bma.entrypoints: "web"
+      traefik.http.routers.bma.rule: "Host(`billiesmacoadventure.com`) || Host(`bma.dbut.dev`)"
+      traefik.http.middlewares.bma-headers.headers.customrequestheaders.X-Forwarded-Host: "billiesmacoadventure.com"
+      traefik.http.middlewares.bma-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      traefik.http.routers.bma.middlewares: "bma-headers"
     volumes:
       - wp_data:/var/www/html
     networks:
-      - web
-      - wordpress
+      web:
+      wordpress:
     restart: always
     environment:
-      - WORDPRESS_DB_HOST=db
-      - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_NAME=wordpress
+      WORDPRESS_DB_HOST: "db"
+      WORDPRESS_DB_USER: "wordpress"
+      WORDPRESS_DB_PASSWORD: "wordpress"
+      WORDPRESS_DB_NAME: "wordpress"
 
 volumes:
   db_data:
