@@ -13,21 +13,31 @@ services:
 
   traefik:
     container_name: traefik
-    image: traefik:v2.5
+    image: traefik
     ports:
       - "443:8443"
     command:
       - "--providers.docker=true"
-      - "--providers.file.filename=/etc/traefik/traefik_dynamic.yaml"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.address=:443"
+      - "--entrypoints.web.http.tls.certresolver=r"
+      - "--entrypoints.web.http.tls.domains[0].main=dbut.dev"
+      - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la"
+      - "--entrypoints.web.http.tls.domains[1].main=billiesmacoadventure.com"
+      - "--entrypoints.web.http.tls.domains[1].sans=*.billiesmacoadventure.com"
       - "--entrypoints.local.address=:8443"
+      - "--entrypoints.local.http.tls.certresolver=r"
+      - "--entrypoints.local.http.tls.domains[0].main=dbut.dev"
+      - "--entrypoints.local.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la"
       - "--entrypoints.traefik.address=:8080"
       - "--api.dashboard=true"
+      - "--certificatesresolvers.r.acme.email=dylan@but.la"
+      - "--certificatesresolvers.r.acme.dnschallenge=true"
+      - "--certificatesresolvers.r.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.r.acme.dnschallenge.delayBeforeCheck=0"
+      - "--certificatesresolvers.r.acme.storage=acme.json"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/root/ghq/github.com/dbutlabs/home/traefik_dynamic.yaml:/etc/traefik/traefik_dynamic.yaml"
-      - "/etc/letsencrypt/live:/certs/live"
-      - "/etc/letsencrypt/archive:/certs/archive"
+      - "/var/lib/docker/volumes/home_traefik/_data/acme.json:/acme.json"
     networks:
       - ingress
       - web
@@ -37,6 +47,9 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`traefik.dbut.dev`)"
       - "traefik.http.routers.dashboard.service=api@internal"
     restart: always
+    environment:
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_API_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_TOKEN}
 
   uptime-kuma:
     image: louislam/uptime-kuma:1
@@ -105,7 +118,6 @@ services:
       - "traefik.docker.network=web"
       - "traefik.http.routers.portainer.entrypoints=local"
       - "traefik.http.routers.portainer.rule=Host(`portainer.dbut.dev`)"
-      - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -121,7 +133,6 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.dbut.dev`)"
       - "traefik.http.routers.jellyfins.entrypoints=local"
       - "traefik.http.routers.jellyfins.rule=Host(`jellyfin.dbut.dev`)"
-      - "traefik.http.routers.jellyfins.tls=true"
     networks:
       - web
     volumes:
@@ -145,7 +156,6 @@ services:
       - "traefik.docker.network=web"
       - "traefik.http.routers.transmission.entrypoints=local"
       - "traefik.http.routers.transmission.rule=Host(`transmission.dbut.dev`)"
-      - "traefik.http.routers.transmission.tls=true"
     networks:
       - web
     environment:
@@ -176,7 +186,6 @@ services:
       - "traefik.http.routers.speedtest.rule=Host(`speedtest.dbut.dev`)"
       - "traefik.http.routers.speedtests.entrypoints=local"
       - "traefik.http.routers.speedtests.rule=Host(`speedtest.dbut.dev`)"
-      - "traefik.http.routers.speedtests.tls=true"
     networks:
       - web
     image: openspeedtest/latest
@@ -198,7 +207,7 @@ services:
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.routers.shlink.entrypoints=web"
-      - "traefik.http.routers.shlink.rule=Host(`but.la`, `dbut.dev`)"
+      - "traefik.http.routers.shlink.rule=Host(`but.la`) || Host(`dbut.dev`)"
     networks:
       - web
       - db
@@ -216,7 +225,6 @@ services:
       - "traefik.docker.network=web"
       - "traefik.http.routers.pihole.entrypoints=local"
       - "traefik.http.routers.pihole.rule=Host(`pihole.dbut.dev`)"
-      - "traefik.http.routers.pihole.tls=true"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
     networks:
       - web
@@ -240,9 +248,10 @@ services:
       - "traefik.http.routers.home.rule=Host(`amihome.dbut.dev`)"
       - "traefik.http.routers.homes.entrypoints=local"
       - "traefik.http.routers.homes.rule=Host(`amihome.dbut.dev`)"
-      - "traefik.http.routers.homes.tls=true"
 
 
+volumes:
+  traefik:
 
 networks:
   ingress:

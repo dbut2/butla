@@ -1,3 +1,0 @@
-providers:
-  file:
-    filename: /etc/traefik/traefik_dynamic.yaml

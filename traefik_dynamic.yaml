@@ -1,9 +1,0 @@
-tls:
-  certificates:
-    - certFile: /certs/live/dbut.dev/fullchain.pem
-      keyFile: /certs/live/dbut.dev/privkey.pem
-  stores:
-    default:
-      defaultCertificate:
-        certFile: /certs/live/dbut.dev/fullchain.pem
-        keyFile: /certs/live/dbut.dev/privkey.pem
