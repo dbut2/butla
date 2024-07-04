@@ -193,8 +193,6 @@ services:
     container_name: shlink
     environment:
       <<: *default-environment
-      DEFAULT_DOMAIN: "but.la"
-      DEFAULT_BASE_URL_REDIRECT: "https://dylanbutler.dev"
       DEFAULT_SHORT_CODES_LENGTH: 4
       REDIRECT_APPEND_EXTRA_PATH: true
       IS_HTTPS_ENABLED: true
