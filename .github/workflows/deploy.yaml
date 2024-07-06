@@ -12,8 +12,6 @@ jobs:
       - run: |
           docker compose -f compose.yaml up --build --detach --remove-orphans
           docker compose -f bma/compose.yaml up --build --detach --remove-orphans
-          docker compose -f monica/compose.yaml up --build --detach --remove-orphans
-          docker compose -f wordpress/compose.yaml up --build --detach --remove-orphans
         env:
           APPLE_EMAIL_USERNAME: ${{ secrets.APPLE_EMAIL_USERNAME }}
           APPLE_EMAIL_PASSWORD: ${{ secrets.APPLE_EMAIL_PASSWORD }}
