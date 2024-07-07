@@ -36,13 +36,13 @@ var (
 		Title:   "Am I Home? No",
 		Message: "Hello, World!",
 		Explanation: `<p>You are seeing this message because your connection is being routed through the public internet. This may be due to one of the following reasons:</p>
-                <ol>
-                    <li>You are not connected to the network.</li>
-                    <li>You might be using a VPN, causing your traffic to be routed outside of the network.</li>
-                    <li>Your DNS settings may not be pointing directly to the network gateway.</li>
-                    <li>Your DNS cache might still be holding the global address.</li>
-                </ol>
-                <p>To resolve this issue, ensure you are connected to the <code>dbut2</code> network and that your local DNS settings are pointing to the network gateway at <code>192.168.2.1</code>.</p>`,
+<ol>
+	<li>You are not connected to the network.</li>
+	<li>You might be using a VPN, causing your traffic to be routed outside of the network.</li>
+	<li>Your DNS settings may not be pointing directly to the network gateway.</li>
+	<li>Your DNS cache might still be holding the global address.</li>
+</ol>
+<p>To resolve this issue, ensure you are connected to the <code>dbut2</code> network and that your local DNS settings are pointing to the network gateway at <code>192.168.2.1</code>.</p>`,
 	}
 )
 
@@ -67,15 +67,11 @@ func main() {
 
 		var data PageData
 
-		if IsAll(ips, func(ip net.IP) bool {
-			return local.Contains(ip)
-		}) {
+		if HasInNet(local, ips) {
 			data = localData
 		}
 
-		if IsAny(ips, func(ip net.IP) bool {
-			return docker.Contains(ip)
-		}) {
+		if HasInNet(docker, ips) {
 			data = dockerData
 		}
 
@@ -89,22 +85,13 @@ func main() {
 	}
 }
 
-func IsAny[S ~[]E, E any](s S, f func(E) bool) bool {
-	for _, e := range s {
-		if f(e) {
+func HasInNet(n *net.IPNet, ips []net.IP) bool {
+	for _, ip := range ips {
+		if n.Contains(ip) {
 			return true
 		}
 	}
 	return false
-}
-
-func IsAll[S ~[]E, E any](s S, f func(E) bool) bool {
-	for _, e := range s {
-		if !f(e) {
-			return false
-		}
-	}
-	return true
 }
 
 func MapSlice[S ~[]E, E any, U any](s S, f func(E) U) []U {
