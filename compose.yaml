@@ -204,7 +204,7 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.shlink.entrypoints: "web"
-      traefik.http.routers.shlink.rule: "Host(`but.la`) || Host(`dbut.dev`)"
+      traefik.http.routers.shlink.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
     networks:
       <<: *default-networks
       db:
