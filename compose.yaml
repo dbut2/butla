@@ -193,6 +193,7 @@ services:
     container_name: shlink
     environment:
       <<: *default-environment
+      DEFAULT_DOMAIN: but.la
       DEFAULT_SHORT_CODES_LENGTH: 4
       REDIRECT_APPEND_EXTRA_PATH: true
       IS_HTTPS_ENABLED: true
@@ -204,12 +205,22 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.shlink.entrypoints: "web"
-      traefik.http.routers.shlink.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
+#      traefik.http.routers.shlink.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
     networks:
       <<: *default-networks
       db:
     depends_on:
       - db
+
+  butla:
+    <<: *service-defaults
+    build:
+      context: butla
+      dockerfile: Dockerfile
+    labels:
+      <<: *default-labels
+      traefik.http.routers.butla.entrypoints: "web"
+      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
 
   pihole:
     <<: *service-defaults
