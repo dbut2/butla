@@ -42,7 +42,7 @@ var (
 	<li>Your DNS settings may not be pointing directly to the network gateway.</li>
 	<li>Your DNS cache might still be holding the global address.</li>
 </ol>
-<p>To resolve this issue, ensure you are connected to the <code>dbut2</code> network and that your local DNS settings are pointing to the network gateway at <code>192.168.2.1</code>.</p>`,
+<p>To resolve this issue, ensure you are connected to the <code>dbut2</code> network and that your local DNS settings are pointing to the network gateway at <code>192.168.1.1</code>.</p>`,
 	}
 )
 
