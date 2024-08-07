@@ -10,7 +10,7 @@ services:
     command:
       - -c
       - |
-        echo '* * * * * docker compose -f /jamesblewis/compose.yaml run triple-j-bot' >> /etc/crontabs/root
+        echo '* * * * * docker compose -f /jamesblewis/compose.yaml run --rm triple-j-bot' >> /etc/crontabs/root
         crond -f -d 8
     environment:
       SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}

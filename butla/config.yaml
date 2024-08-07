@@ -4,6 +4,7 @@ default:
   /linkedin: https://www.linkedin.com/in/dbut2/
   /strava: https://www.strava.com/athletes/dbut2
   /lastfm: https://www.last.fm/user/dbut2
+  /devhouse: https://devhou.se
 listen.dbut.dev:
   default: https://www.last.fm/user/dbut2
 listen.dylanbutler.dev:

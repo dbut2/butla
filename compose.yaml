@@ -259,6 +259,14 @@ services:
       start_period: 40s
     restart: unless-stopped
 
+  ddns:
+    container_name: ddns
+    image: oznu/cloudflare-ddns
+    environment:
+      API_KEY: ${CLOUDFLARE_DDNS_API_TOKEN}
+      ZONE: dbut.dev
+      SUBDOMAIN: home
+
   amihome:
     <<: *service-defaults
     build:
