@@ -124,7 +124,7 @@ services:
     command: -H unix:///var/run/docker.sock
     labels:
       <<: *default-labels
-      traefik.http.routers.portainer.entrypoints: "local"
+      traefik.http.routers.portainer.entrypoints: "web"
       traefik.http.routers.portainer.rule: "Host(`portainer.dbut.dev`)"
       traefik.http.services.portainer.loadbalancer.server.port: "9000"
     volumes:
