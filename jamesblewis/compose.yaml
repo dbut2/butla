@@ -8,10 +8,10 @@ services:
     command:
       - -c
       - |
-        echo '* * * * * docker compose -f /jamesblewis/compose.yaml run example-service' >> /etc/crontabs/root
+        echo '* * * * * docker compose -f /jamesblewis/compose.yaml run triple-j-bot' >> /etc/crontabs/root
         crond -f -d 8
 
-  example-service:
+  triple-j-bot:
     image: ghcr.io/jamesblewis/triplej-playlist-generator:main
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
