@@ -3,7 +3,7 @@ services:
     image: docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis #todo
+      - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
     entrypoint: /bin/sh
     command:
       - -c
@@ -12,8 +12,12 @@ services:
         crond -f -d 8
 
   example-service:
-    image: docker
+    image: ghcr.io/jamesblewis/triplej-playlist-generator:main
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      - ps
+    environment:
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      SPOTIFY_REFRESH_TOKEN: ${SPOTIFY_REFRESH_TOKEN}
+      SPOTIFY_PLAYLIST_ID: ${SPOTIFY_PLAYLIST_ID}
+      PLAYLIST_SIZE: ${PLAYLIST_SIZE}
