@@ -1,6 +1,8 @@
 services:
   scheduler:
     image: docker
+    labels:
+      io.portainer.accesscontrol.users: jamesblewis
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
@@ -19,6 +21,8 @@ services:
 
   triple-j-bot:
     image: ghcr.io/jamesblewis/triplej-playlist-generator:main
+    labels:
+      io.portainer.accesscontrol.users: jamesblewis
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
