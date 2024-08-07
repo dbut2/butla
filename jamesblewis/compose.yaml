@@ -1,14 +1,3 @@
-environment:
-  SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
-  SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
-  SPOTIFY_REFRESH_TOKEN: ${SPOTIFY_REFRESH_TOKEN}
-  SPOTIFY_PLAYLIST_ID: ${SPOTIFY_PLAYLIST_ID}
-  PLAYLIST_SIZE: ${PLAYLIST_SIZE}
-  OTEL_SERVICE_NAME: triple-j-bot
-  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-  OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io
-  OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS}
-
 services:
   scheduler:
     image: docker
@@ -23,6 +12,16 @@ services:
       - |
         echo '* * * * * docker compose -f /jamesblewis/compose.yaml run --rm triple-j-bot' >> /etc/crontabs/root
         crond -f -d 8
+    environment:
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      SPOTIFY_REFRESH_TOKEN: ${SPOTIFY_REFRESH_TOKEN}
+      SPOTIFY_PLAYLIST_ID: ${SPOTIFY_PLAYLIST_ID}
+      PLAYLIST_SIZE: ${PLAYLIST_SIZE}
+      OTEL_SERVICE_NAME: triple-j-bot
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS}
 
   triple-j-bot:
     image: ghcr.io/jamesblewis/triplej-playlist-generator:main
@@ -30,4 +29,13 @@ services:
       io.portainer.accesscontrol.users: jamesblewis,test
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      
+    environment:
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      SPOTIFY_REFRESH_TOKEN: ${SPOTIFY_REFRESH_TOKEN}
+      SPOTIFY_PLAYLIST_ID: ${SPOTIFY_PLAYLIST_ID}
+      PLAYLIST_SIZE: ${PLAYLIST_SIZE}
+      OTEL_SERVICE_NAME: triple-j-bot
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS}
