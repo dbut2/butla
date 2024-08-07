@@ -10,6 +10,12 @@ services:
       - |
         echo '* * * * * docker compose -f /jamesblewis/compose.yaml run triple-j-bot' >> /etc/crontabs/root
         crond -f -d 8
+    environment:
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      SPOTIFY_REFRESH_TOKEN: ${SPOTIFY_REFRESH_TOKEN}
+      SPOTIFY_PLAYLIST_ID: ${SPOTIFY_PLAYLIST_ID}
+      PLAYLIST_SIZE: ${PLAYLIST_SIZE}
 
   triple-j-bot:
     image: ghcr.io/jamesblewis/triplej-playlist-generator:main
