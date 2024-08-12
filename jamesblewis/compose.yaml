@@ -7,6 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
     entrypoint: /bin/sh
+    restart: always
     command:
       - -c
       - |
