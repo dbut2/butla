@@ -5,7 +5,8 @@ services:
       io.portainer.accesscontrol.users: jamesblewis,test
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
+      # - /home/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
+      - /Users/dylan/ghq/github.com/dbutlabs/home/jamesblewis:/jamesblewis
     entrypoint: /bin/sh
     restart: always
     command:
