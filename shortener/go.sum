@@ -7,8 +7,8 @@ cloud.google.com/go/auth/oauth2adapt v0.2.4 h1:0GWE/FUsXhf6C+jAkWgYm7X9tK8cuEIfy
 cloud.google.com/go/auth/oauth2adapt v0.2.4/go.mod h1:jC/jOpwFP6JBxhB3P5Rr0a9HLMC/Pe3eaL4NmdvqPtc=
 cloud.google.com/go/compute/metadata v0.5.0 h1:Zr0eK8JbFv6+Wi4ilXAR8FJ3wyNdpxHKJNPos6LTZOY=
 cloud.google.com/go/compute/metadata v0.5.0/go.mod h1:aHnloV2TPI38yx4s9+wAZhHykWvVCfu7hQbF+9CWoiY=
-cloud.google.com/go/datastore v1.17.1 h1:6Me8ugrAOAxssGhSo8im0YSuy4YvYk4mbGvCadAH5aE=
-cloud.google.com/go/datastore v1.17.1/go.mod h1:mtzZ2HcVtz90OVrEXXGDc2pO4NM1kiBQy8YV4qGe0ZM=
+cloud.google.com/go/datastore v1.18.0 h1:OHrTB28mGgfDndQEpVIbnCwF5/QD9Qx3RSMjW//QDVA=
+cloud.google.com/go/datastore v1.18.0/go.mod h1:XvmGl5dNXQvk9Xm0fwdA4YYicMtB9Gmxgc1g9gxMu18=
 cloud.google.com/go/iam v1.1.13 h1:7zWBXG9ERbMLrzQBRhFliAV+kjcRToDTgQT3CTwYyv4=
 cloud.google.com/go/iam v1.1.13/go.mod h1:K8mY0uSXwEXS30KrnVb+j54LB/ntfZu1dr+4zFMNbus=
 cloud.google.com/go/secretmanager v1.14.0 h1:P2RRu2NEsQyOjplhUPvWKqzDXUKzwejHLuSUBHI8c4w=
