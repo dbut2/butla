@@ -3,7 +3,7 @@ module github.com/dbut2/butla/shortener
 go 1.21
 
 require (
-	cloud.google.com/go/datastore v1.17.1
+	cloud.google.com/go/datastore v1.18.0
 	cloud.google.com/go/secretmanager v1.14.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5

@@ -28,8 +28,8 @@ cloud.google.com/go/auth/oauth2adapt
 # cloud.google.com/go/compute/metadata v0.5.0
 ## explicit; go 1.20
 cloud.google.com/go/compute/metadata
-# cloud.google.com/go/datastore v1.17.1
-## explicit; go 1.20
+# cloud.google.com/go/datastore v1.18.0
+## explicit; go 1.21
 cloud.google.com/go/datastore
 cloud.google.com/go/datastore/internal
 cloud.google.com/go/datastore/internal/gaepb
