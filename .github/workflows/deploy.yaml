@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          docker compose -f jamesblewis/compose.yaml up --build --detach --remove-orphans
+          docker stack deploy -c jamesblewis/compose.yaml jamesblewis
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
