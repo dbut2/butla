@@ -1,6 +1,10 @@
 services:
   scheduler:
     image: docker
+    deploy:
+      placement:
+        constraints:
+          - node.hostname != dylans-node-1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     entrypoint: /bin/sh
