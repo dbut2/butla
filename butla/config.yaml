@@ -9,3 +9,5 @@ listen.dbut.dev:
   default: https://www.last.fm/user/dbut2
 listen.dylanbutler.dev:
   default: https://www.last.fm/user/dbut2
+dbut.tw:
+  /o/devhouse: https://devhou.se
