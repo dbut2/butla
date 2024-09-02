@@ -30,7 +30,7 @@ services:
       - "--entrypoints.web.address=:443"
       - "--entrypoints.web.http.tls.certresolver=r"
       - "--entrypoints.web.http.tls.domains[0].main=dbut.dev"
-      - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la"
+      - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la,dbut.tw"
       - "--entrypoints.web.http.tls.domains[1].main=billiesmacoadventure.com"
       - "--entrypoints.web.http.tls.domains[1].sans=*.billiesmacoadventure.com"
       - "--entrypoints.local.address=:8443"
@@ -218,7 +218,7 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.butla.entrypoints: "web"
-      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
+      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`) || Host(`dbut.tw`)"
 
   pihole:
     <<: *service-defaults
