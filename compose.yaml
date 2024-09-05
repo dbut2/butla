@@ -24,6 +24,8 @@ services:
   traefik:
     container_name: traefik
     image: traefik
+    ports:
+      - "443:8443"
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
