@@ -218,7 +218,7 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.butla.entrypoints: "web"
-      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`) || Host(`dbut.tw`)"
+      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`) || Host(`dbut.tw` || Host(`dylan.md`)"
 
   pihole:
     <<: *service-defaults
