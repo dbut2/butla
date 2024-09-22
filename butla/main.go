@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -18,7 +17,6 @@ type Config map[string]map[string]string
 func main() {
 	con := Config{}
 	sanic(yaml.Unmarshal(c, &con))
-	fmt.Println(con)
 	sanic(http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimRight(must(url.ParseRequestURI(r.RequestURI)).Path, "/")
 		w.Header().Set("Location", getCode(con, r.Host, path))
@@ -48,7 +46,4 @@ func sanic(err error) {
 	}
 }
 
-func must[T any](v T, err error) T {
-	sanic(err)
-	return v
-}
+func must[T any](v T, err error) T { sanic(err); return v }

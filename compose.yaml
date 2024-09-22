@@ -280,9 +280,64 @@ services:
       traefik.http.routers.home.entrypoints: "web,local"
       traefik.http.routers.home.rule: "Host(`amihome.dbut.dev`)"
 
+  llm:
+    image: ghcr.io/open-webui/open-webui:cuda
+    runtime: nvidia
+    networks:
+      - web
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - llm:/app/backend/data
+    labels:
+      <<: *default-labels
+      traefik.http.routers.llm.entrypoints: web
+      traefik.http.routers.llm.rule: "Host(`llm.dbut.dev`)"
+
+  ollama:
+    image: ollama/ollama
+    runtime: nvidia
+    networks:
+      - web
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - /mnt/ollama:/root/.ollama
+
+  invoke:
+    image: ghcr.io/invoke-ai/invokeai@sha256:d46d072372d68d7d53c2191369a399c57399ca42261c6b73489ee889fe34cef8
+    runtime: nvidia
+    volumes:
+      - /mnt/invoke:/invokeai
+    networks:
+      - web
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    labels:
+      <<: *default-labels
+      traefik.http.routers.invoke.entrypoints: local
+      traefik.http.routers.invoke.rule: "Host(`invoke.dbut.dev`)"
+      traefik.http.services.invoke.loadbalancer.server.port: "9090"
 
 volumes:
   traefik-acme:
+  llm:
+  ollama:
 
 networks:
   ingress:

@@ -20,6 +20,13 @@ jobs:
           CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
           CLOUDFLARE_DDNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DDNS_API_TOKEN }}
 
+  minecraft:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker compose -f minecraft/compose.yaml up --detach --remove-orphans
+
   jamesblewis:
     runs-on: self-hosted
     steps:
