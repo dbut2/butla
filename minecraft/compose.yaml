@@ -1,9 +1,13 @@
 services:
   minecraft:
     image: itzg/minecraft-server
+    tty: true
+    stdin_open: true
     environment:
       EULA: "true"
       TYPE: "PAPER"
+      INIT_MEMORY: 1G
+      MAX_MEMORY: 16G
       PLUGINS: |
         https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
         https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
