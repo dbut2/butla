@@ -15,6 +15,9 @@ services:
         https://github.com/EssentialsX/Essentials/releases/download/2.20.1/EssentialsXChat-2.20.1.jar
         https://hangarcdn.papermc.io/plugins/Blue/BlueMap/versions/5.3/PAPER/BlueMap-5.3-paper.jar
         https://hangarcdn.papermc.io/plugins/Multiverse/Multiverse-Core/versions/4.3.13/PAPER/multiverse-core-4.3.13.jar
+        https://hangarcdn.papermc.io/plugins/Multiverse/Multiverse-Inventories/versions/4.2.6/PAPER/multiverse-inventories-4.2.6.jar
+        https://github.com/xtkq-is-not-available/VoidGen/releases/download/v2.2.1/VoidGen-2.2.1.jar
+        https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.3.6/PAPER/worldedit-bukkit-7.3.6.jar
     ports:
       - "25565:25565"
       - "19132:19132/udp"
@@ -24,7 +27,7 @@ services:
       - web
     labels:
       traefik.enable: "true"
-      trafeik.docker.network: web
+      traefik.docker.network: web
       traefik.http.routers.mcmap.entrypoints: "web"
       traefik.http.routers.mcmap.rule: "Host(`mcmap.dbut.dev`)"
       traefik.http.services.mcmap.loadbalancer.server.port: "8100"

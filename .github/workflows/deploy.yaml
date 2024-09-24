@@ -19,6 +19,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
           CLOUDFLARE_DDNS_API_TOKEN: ${{ secrets.CLOUDFLARE_DDNS_API_TOKEN }}
+          AUTHENTIK_LLM_CLIENT_ID: ${{ secrets.AUTHENTIK_LLM_CLIENT_ID }}
+          AUTHENTIK_LLM_CLIENT_SECRET: ${{ secrets.AUTHENTIK_LLM_CLIENT_SECRET }}
 
   minecraft:
     runs-on: self-hosted
@@ -26,6 +28,16 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           docker compose -f minecraft/compose.yaml up --detach --remove-orphans
+
+  auth:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker compose -f auth/compose.yaml up --detach --remove-orphans
+        env:
+          PG_PASS: ${{ secrets.AUTH_PG_PASS }}
+          AUTHENTIK_SECRET_KEY: ${{ secrets.AUTH_SECRET_KEY }}
 
   jamesblewis:
     runs-on: self-hosted

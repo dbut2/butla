@@ -129,7 +129,7 @@ services:
       traefik.http.services.portainer.loadbalancer.server.port: "9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/root/ghq/ssh.dbut.dev/dbut/home/portainer:/data"
+      - "portainer:/data"
 
   jellyfin:
     <<: *service-defaults
@@ -298,6 +298,12 @@ services:
       <<: *default-labels
       traefik.http.routers.llm.entrypoints: web
       traefik.http.routers.llm.rule: "Host(`llm.dbut.dev`)"
+    environment:
+      ENABLE_OAUTH_SIGNUP: true
+      OAUTH_MERGE_ACCOUNTS_BY_EMAIL: true
+      OAUTH_CLIENT_ID: ${AUTHENTIK_LLM_CLIENT_ID}
+      OAUTH_CLIENT_SECRET: ${AUTHENTIK_LLM_CLIENT_SECRET}
+      OPENID_PROVIDER_URL: https://auth.dbut.dev/application/o/llm/.well-known/openid-configuration
 
   ollama:
     image: ollama/ollama
@@ -335,6 +341,7 @@ services:
       traefik.http.services.invoke.loadbalancer.server.port: "9090"
 
 volumes:
+  portainer:
   traefik-acme:
   llm:
   ollama:
