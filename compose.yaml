@@ -1,0 +1,17 @@
+services:
+  butla:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "web"
+      traefik.http.routers.butla.entrypoints: "web"
+      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`dbut.tw`)"
+    networks:
+      web:
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true
