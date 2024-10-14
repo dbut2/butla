@@ -1,77 +1,35 @@
-# Shortener
+# butla
 
-Shortener is a simple URL shortening service written in Go. It provides the ability to create short, memorable links that redirect to longer URLs.
+butla is a simple URL shortening service written in Go, built in Docker. It is made for speed and nothing else.
 
-## Prerequisites
+- ❌ No UI
+- ❌ No GUI
+- ❌ No CLI
+- ❌ No API
+- ❌ No volume mounts
+- ❌ No container networking
+- ❌ No database
+- ✅ Simple embedded in-memory configuration
+- ✅ Stupid simple
+- ✅ Stupid fast
 
-To run Shortener, ensure you have the following installed:
-- Go (version 1.21 or newer)
-- Docker (optional)
+## Usage
 
-The application also requires access to a database. The provided `schema.sql` file includes the SQL schema that is compatible with MySQL.
+As the config is embedded you will need to build your own image, you can do this by cloning the repo, updating the config and docker building.
 
-## Building
-
-### Manually
-
-1. Navigate to the `shortener` directory.
-2. Run the Go build command:
-    ```bash
-    go build -o shortener ./cmd/shortener
-    ```
-3. The `shortener` binary will be created in the current directory.
-
-### Using Docker
-
-1. Navigate to the root directory of the project.
-2. Build the Docker image with the following command:
-    ```bash
-    docker build -t shortener -f deployment/Dockerfile .
-    ```
-3. The Docker image tagged as `shortener` will be created.
-
-## Configuration
-
-The application can be configured using the `yaml` files located in the `deployment/configs/` directory. It supports environment-specific configurations:
-
-- `prod.yaml` for production
-- `test.yaml` for testing
-- `dev.yaml` for development
-- `local.yaml` for local development
-
-Adjust the configurations as needed for your environment, such as database credentials, datastore identifiers, or cache settings.
-
-## Running
-
-### Manually
-
-Execute the built binary with the following command:
-```bash
-./shortener
+```shell
+git clone https://github.com/dbut2/butla.git
+cd butla
+docker build -t butla .
 ```
 
-You can set the `ENV` environment variable to load specific configurations:
-```bash
-ENV=local ./shortener
-```
+There is an example compose.yaml included with some labels for Traefik.
 
-### Using Docker
+## Redirection
 
-1. Run the Docker image with the following command:
-    ```bash
-    docker run -p 8080:8080 -e ENV=local shortener
-    ```
-2. The application will be accessible on port `8080`.
+For a given request to {DOMAIN}/{PATH}, the first item in this list found in the config will be returned with a temporary redirect (307):
 
-## Deployment
-
-Refer to the provided `Dockerfile` in `deployment/` directory for deployment configurations. Update it as necessary to use your base image and desired environment.
-
-## Database Schema
-
-To set up your database, use the `schema.sql` file located in the `deployment/` directory. This file contains the SQL commands to create the necessary tables and sample data.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-```
+1. {DOMAIN}/{PATH}
+2. default/{PATH}
+3. {DOMAIN}/default
+4. default/default
