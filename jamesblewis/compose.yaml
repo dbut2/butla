@@ -11,7 +11,7 @@ services:
     command:
       - -c
       - |
-        echo '* * * * * docker run \
+        echo '* * * * * docker run --rm \
         -e SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID} \
         -e SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET} \
         -e SPOTIFY_REFRESH_TOKEN=${SPOTIFY_REFRESH_TOKEN} \
