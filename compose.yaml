@@ -25,6 +25,7 @@ services:
     container_name: traefik
     image: traefik
     ports:
+      - "8444:443"
       - "443:8443"
     command:
       - "--providers.docker=true"
@@ -280,6 +281,21 @@ services:
       traefik.http.routers.home.entrypoints: "web,local"
       traefik.http.routers.home.rule: "Host(`amihome.dbut.dev`)"
 
+  vanity:
+    <<: *service-defaults
+    build:
+      context: vanity
+      dockerfile: Dockerfile
+    networks:
+      <<: *default-networks
+      ingress:
+    labels:
+      <<: *default-labels
+      traefik.http.routers.vanity.entrypoints: "web"
+      traefik.http.routers.vanity.rule: "Host(`dbut.dev`) && PathRegexp(`^/.+`)"
+      traefik.http.routers.vanity.priority: 1000
+    restart: unless-stopped
+
   llm:
     image: ghcr.io/open-webui/open-webui:cuda
     runtime: nvidia
@@ -297,19 +313,28 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.llm.entrypoints: web
-      traefik.http.routers.llm.rule: "Host(`llm.dbut.dev`)"
+      traefik.http.routers.llm.rule: "Host(`llm.dbut.dev`) || Host(`chat.dbut.dev`)"
+#      traefik.http.routers.llm.middlewares: auth@docker
     environment:
       ENABLE_OAUTH_SIGNUP: true
       OAUTH_MERGE_ACCOUNTS_BY_EMAIL: true
       OAUTH_CLIENT_ID: ${AUTHENTIK_LLM_CLIENT_ID}
       OAUTH_CLIENT_SECRET: ${AUTHENTIK_LLM_CLIENT_SECRET}
       OPENID_PROVIDER_URL: https://auth.dbut.dev/application/o/llm/.well-known/openid-configuration
+    restart: unless-stopped
 
   ollama:
     image: ollama/ollama
     runtime: nvidia
+    ports:
+      - 11434:11434
     networks:
       - web
+    labels:
+      <<: *default-labels
+      traefik.http.routers.ollama.entrypoints: web
+      traefik.http.routers.ollama.rule: "Host(`ollama.dbut.dev`)"
+      traefik.http.services.ollama.loadbalancer.server.port: "11434"
     deploy:
       resources:
         reservations:
@@ -319,6 +344,7 @@ services:
               capabilities: [gpu]
     volumes:
       - /mnt/ollama:/root/.ollama
+    restart: unless-stopped
 
   invoke:
     image: ghcr.io/invoke-ai/invokeai@sha256:d46d072372d68d7d53c2191369a399c57399ca42261c6b73489ee889fe34cef8
@@ -339,6 +365,7 @@ services:
       traefik.http.routers.invoke.entrypoints: local
       traefik.http.routers.invoke.rule: "Host(`invoke.dbut.dev`)"
       traefik.http.services.invoke.loadbalancer.server.port: "9090"
+    restart: unless-stopped
 
 volumes:
   portainer:

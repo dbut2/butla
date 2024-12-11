@@ -1,0 +1,32 @@
+services:
+  minecraft-sb:
+    image: itzg/minecraft-server
+    tty: true
+    stdin_open: true
+    environment:
+      EULA: "true"
+      TYPE: "FABRIC"
+      MOTD: "dbut2"
+      INIT_MEMORY: 1G
+      MAX_MEMORY: 16G
+      PLUGINS: |
+        https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/fabric
+        https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/fabric
+        https://cdn.modrinth.com/data/bbtyQ1Po/versions/juNPQ9e3/standard-skyblock-2.0.2.jar
+    ports:
+      - "25565:25565"
+      - "19132:19132/udp"
+    volumes:
+      - "/mnt/mc:/data"
+    networks:
+      - web
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: web
+      traefik.http.routers.mcmap.entrypoints: "web"
+      traefik.http.routers.mcmap.rule: "Host(`mcmap.dbut.dev`)"
+      traefik.http.services.mcmap.loadbalancer.server.port: "8100"
+
+networks:
+  web:
+    external: true
