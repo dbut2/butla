@@ -277,7 +277,7 @@ services:
       - web
     labels:
       <<: *default-labels
-      traefik.http.routers.ollama.entrypoints: web
+      traefik.http.routers.ollama.entrypoints: "local,web"
       traefik.http.routers.ollama.rule: "Host(`ollama.dbut.dev`)"
       traefik.http.services.ollama.loadbalancer.server.port: "11434"
     deploy:

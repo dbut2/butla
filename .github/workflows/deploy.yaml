@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          docker compose -f minecraft/compose.yaml up --detach --remove-orphans
+          docker compose -f minecraft/compose-sb.yaml up --detach --remove-orphans
 
   auth:
     runs-on: self-hosted
@@ -38,17 +38,3 @@ jobs:
         env:
           PG_PASS: ${{ secrets.AUTH_PG_PASS }}
           AUTHENTIK_SECRET_KEY: ${{ secrets.AUTH_SECRET_KEY }}
-
-  jamesblewis:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          docker stack deploy -c jamesblewis/compose.yaml jamesblewis
-        env:
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
-          SPOTIFY_PLAYLIST_ID: ${{ vars.SPOTIFY_PLAYLIST_ID }}
-          PLAYLIST_SIZE: ${{ vars.PLAYLIST_SIZE }}
-          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
