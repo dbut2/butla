@@ -1,0 +1,41 @@
+services:
+  vpn: # VPN login server
+    build:
+      args:
+        FROM: headscale/headscale:0.23.0
+      context: .
+      dockerfile: Dockerfile
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "web"
+      traefik.http.routers.cc-headscale.entrypoints: "web"
+      traefik.http.routers.cc-headscale.rule: "Host(`vpn.cowards.cloud`)"
+      traefik.http.services.cc-headscale.loadbalancer.server.port: 8080
+    networks:
+      - web
+      - vpn-db
+    command:
+      - serve
+    volumes:
+      - /mnt/server/cc/vpn:/var/lib/headscale
+
+  vpn-db:
+    hostname: vpn-db
+    image: postgres:15
+    networks:
+      - vpn-db
+    environment:
+      POSTGRES_DB: headscale
+      POSTGRES_USER: foo
+      POSTGRES_PASSWORD: bar
+    volumes:
+      - /mnt/server/cc/postgres/data:/var/lib/postgresql/data
+
+secrets:
+  headscale-noise-key:
+    external: true
+
+networks:
+  web:
+    external: true
+  vpn-db:

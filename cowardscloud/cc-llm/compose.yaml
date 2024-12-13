@@ -1,0 +1,18 @@
+services:
+  gui:
+    image: ghcr.io/open-webui/open-webui:cuda
+    networks:
+      - web
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "web"
+      traefik.http.routers.cc-llm.entrypoints: "web"
+      traefik.http.routers.cc-llm.rule: "Host(`llm.cowards.cloud`) || Host(`chat.cowards.cloud`)"
+      traefik.http.services.cc-llm.loadbalancer.server.port: "8080"
+    volumes:
+      - /mnt/server/cc/llm:/app/backend/data
+
+networks:
+  web:
+    external: true
+  llm:

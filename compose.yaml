@@ -25,7 +25,7 @@ services:
     container_name: traefik
     image: traefik
     ports:
-      - "8444:443"
+      - "8443:443"
       - "443:8443"
     command:
       - "--providers.docker=true"
@@ -34,8 +34,10 @@ services:
       - "--entrypoints.web.http.tls.certresolver=r"
       - "--entrypoints.web.http.tls.domains[0].main=dbut.dev"
       - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la,dbut.tw,neuron.sh"
-      - "--entrypoints.web.http.tls.domains[1].main=billiesmacoadventure.com"
-      - "--entrypoints.web.http.tls.domains[1].sans=*.billiesmacoadventure.com"
+      - "--entrypoints.web.http.tls.domains[1].main=cowards.cloud"
+      - "--entrypoints.web.http.tls.domains[1].sans=*.cowards.cloud"
+      - "--entrypoints.web.http.tls.domains[2].main=billiesmacoadventure.com"
+      - "--entrypoints.web.http.tls.domains[2].sans=*.billiesmacoadventure.com"
       - "--entrypoints.local.address=:8443"
       - "--entrypoints.local.http.tls.certresolver=r"
       - "--entrypoints.local.http.tls.domains[0].main=dbut.dev"
@@ -141,11 +143,10 @@ services:
       traefik.http.routers.jellyfin.entrypoints: "web,local"
       traefik.http.routers.jellyfin.rule: "Host(`jellyfin.dbut.dev`)"
     volumes:
-      - /root/ghq/ssh.dbut.dev/dbut/home/config:/config
-      - /root/ghq/ssh.dbut.dev/dbut/home/cache:/cache
-      - /media:/media
-      - /mnt/windows/Movies:/media/windows
-      - /mnt/windows/Shows:/media/shows
+      - /mnt/server/jellyfin/config:/config
+      - /mnt/server/jellyfin/cache:/cache
+      - /mnt/media/movies:/media/movies
+      - /mnt/media/shows:/media/shows
     runtime: nvidia
     deploy:
       resources:
