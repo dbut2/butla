@@ -33,7 +33,7 @@ services:
       - "--entrypoints.web.address=:443"
       - "--entrypoints.web.http.tls.certresolver=r"
       - "--entrypoints.web.http.tls.domains[0].main=dbut.dev"
-      - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la,dbut.tw"
+      - "--entrypoints.web.http.tls.domains[0].sans=*.dbut.dev,dylanbutler.dev,*.dylanbutler.dev,but.la,*.but.la,dbut.tw,neuron.sh"
       - "--entrypoints.web.http.tls.domains[1].main=billiesmacoadventure.com"
       - "--entrypoints.web.http.tls.domains[1].sans=*.billiesmacoadventure.com"
       - "--entrypoints.local.address=:8443"
@@ -49,7 +49,7 @@ services:
       - "--certificatesresolvers.r.acme.storage=/acme/acme.json"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "traefik-acme:/acme"
+      - "/mnt/server/traefik/acme:/acme"
     networks:
       - ingress
       - web
@@ -73,7 +73,7 @@ services:
       traefik.http.routers.uptime-kuma.entrypoints: "web"
       traefik.http.routers.uptime-kuma.rule: "Host(`status.dbut.dev`)"
     volumes:
-      - /root/ghq/ssh.dbut.dev/dbut/home/uptime-kuma-data:/app/data
+      - /mnt/server/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
 
   ghost:
@@ -85,8 +85,8 @@ services:
     labels:
       <<: *default-labels
       traefik.http.routers.ghost.entrypoints: "web"
-      traefik.http.routers.ghost.rule: "Host(`dylanbutler.dev`)"
-      traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Host: "dylanbutler.dev"
+      traefik.http.routers.ghost.rule: "Host(`ghost.dbut.dev`)"
+      traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Host: "ghost.dbut.dev"
       traefik.http.middlewares.ghost-headers.headers.customrequestheaders.X-Forwarded-Proto: "https"
       traefik.http.routers.ghost.middlewares: "ghost-headers"
     environment:
@@ -106,7 +106,7 @@ services:
       mail__options__auth__user: ${APPLE_EMAIL_USERNAME}
       mail__options__auth__pass: ${APPLE_EMAIL_PASSWORD}
     volumes:
-      - /root/ghq/ssh.dbut.dev/dbut/home/ghost/ghost:/var/lib/ghost/content
+      - /mnt/server/ghost:/var/lib/ghost/content
 
   db:
     image: mysql:8.0
@@ -116,7 +116,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
-      - /root/ghq/ssh.dbut.dev/dbut/home/ghost/db:/var/lib/mysql
+      - /mnt/server/ghost-db:/var/lib/mysql
 
   portainer:
     <<: *service-defaults
@@ -130,7 +130,7 @@ services:
       traefik.http.services.portainer.loadbalancer.server.port: "9000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "portainer:/data"
+      - "/mnt/server/portainer:/data"
 
   jellyfin:
     <<: *service-defaults
@@ -166,9 +166,9 @@ services:
       PUID: "1000"
       PGID: "1000"
     volumes:
-      - /mnt/windows/Movies:/media/movies
-      - /mnt/windows/Shows:/media/shows
-      - /mnt/nvme1/transmission:/downloads
+      - /mnt/media/movies:/media/movies
+      - /mnt/media/shows:/media/shows
+      - /mnt/server/transmission:/downloads
 
   watchtower:
     image: containrrr/watchtower
@@ -188,41 +188,6 @@ services:
       traefik.http.routers.speedtest.entrypoints: "web,local"
       traefik.http.routers.speedtest.rule: "Host(`speedtest.dbut.dev`)"
 
-  shlink:
-    <<: *service-defaults
-    image: shlinkio/shlink:stable
-    container_name: shlink
-    environment:
-      <<: *default-environment
-      DEFAULT_DOMAIN: but.la
-      DEFAULT_SHORT_CODES_LENGTH: 4
-      REDIRECT_APPEND_EXTRA_PATH: true
-      IS_HTTPS_ENABLED: true
-      DB_DRIVER: mysql
-      DB_NAME: shlink_db
-      DB_USER: root
-      DB_PASSWORD: password
-      DB_HOST: db
-    labels:
-      <<: *default-labels
-      traefik.http.routers.shlink.entrypoints: "web"
-#      traefik.http.routers.shlink.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`)"
-    networks:
-      <<: *default-networks
-      db:
-    depends_on:
-      - db
-
-  butla:
-    <<: *service-defaults
-    build:
-      context: butla
-      dockerfile: Dockerfile
-    labels:
-      <<: *default-labels
-      traefik.http.routers.butla.entrypoints: "web"
-      traefik.http.routers.butla.rule: "Host(`but.la`) || Host(`dbut.dev`) || Host(`listen.dbut.dev`) || Host(`listen.dylanbutler.dev`) || Host(`bailey.but.la`) || Host(`dylan.but.la`) || Host(`dbut.tw`) || Host(`dylan.md`)"
-
   pihole:
     <<: *service-defaults
     container_name: pihole
@@ -236,29 +201,8 @@ services:
       traefik.http.routers.pihole.rule: "Host(`pihole.dbut.dev`)"
       traefik.http.services.pihole.loadbalancer.server.port: "80"
     volumes:
-      - '/root/ghq/ssh.dbut.dev/dbut/home/pihole/etc-pihole:/etc/pihole'
-      - '/root/ghq/ssh.dbut.dev/dbut/home/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
-
-  ntfy:
-    <<: *service-defaults
-    image: binwiederhier/ntfy
-    container_name: ntfy
-    command:
-      - serve
-    volumes:
-      - /root/ghq/ssh.dbut.dev/dbut/home/ntfy/var/cache/ntfy:/var/cache/ntfy
-      - /root/ghq/ssh.dbut.dev/dbut/home/ntfy/etc/ntfy:/etc/ntfy
-    labels:
-      <<: *default-labels
-      traefik.http.routers.ntfy.entrypoints: web
-      traefik.http.routers.ntfy.rule: "Host(`ntfy.dbut.dev`)"
-    healthcheck: # optional: remember to adapt the host:port to your environment
-      test: [ "CMD-SHELL", "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1" ]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
+      - '/mnt/server/pihole/etc-pihole:/etc/pihole'
+      - '/mnt/server/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
 
   ddns:
     container_name: ddns
@@ -309,7 +253,7 @@ services:
               count: 1
               capabilities: [gpu]
     volumes:
-      - llm:/app/backend/data
+      - /mnt/server/chat:/app/backend/data
     labels:
       <<: *default-labels
       traefik.http.routers.llm.entrypoints: web
@@ -343,14 +287,14 @@ services:
               count: 1
               capabilities: [gpu]
     volumes:
-      - /mnt/ollama:/root/.ollama
+      - /mnt/server/ollama:/root/.ollama
     restart: unless-stopped
 
   invoke:
     image: ghcr.io/invoke-ai/invokeai@sha256:d46d072372d68d7d53c2191369a399c57399ca42261c6b73489ee889fe34cef8
     runtime: nvidia
     volumes:
-      - /mnt/invoke:/invokeai
+      - /mnt/server/invoke:/invokeai
     networks:
       - web
     deploy:
