@@ -1,9 +1,0 @@
-default:
-  default: https://dylanbutler.dev
-  /github: https://github.com/dbut2
-  /linkedin: https://www.linkedin.com/in/dbut2
-  /strava: https://www.strava.com/athletes/dbut2
-  /lastfm: https://www.last.fm/user/dbut2
-  /devhouse: https://devhou.se
-dbut.tw:
-  /o/devhouse: https://devhou.se

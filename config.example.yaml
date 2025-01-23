@@ -1,0 +1,6 @@
+default:
+  default: https://example.com
+  /google: https://www.google.com
+sho.rt:
+  default: https://example.net
+  /x: https://x.com

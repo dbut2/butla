@@ -9,21 +9,9 @@ butla is a simple URL shortening service written in Go, built in Docker. It is m
 - ❌ No volume mounts
 - ❌ No container networking
 - ❌ No database
-- ✅ Simple embedded in-memory configuration
+- ✅ Simple in-memory configuration
 - ✅ Stupid simple
 - ✅ Stupid fast
-
-## Usage
-
-As the config is embedded you will need to build your own image, you can do this by cloning the repo, updating the config and docker building.
-
-```shell
-git clone https://github.com/dbut2/butla.git
-cd butla
-docker build -t butla .
-```
-
-There is an example compose.yaml included with some labels for Traefik.
 
 ## Redirection
 
