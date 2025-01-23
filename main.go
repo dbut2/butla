@@ -4,19 +4,17 @@ import (
 	_ "embed"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed config.yaml
-var c []byte
-
 type Config map[string]map[string]string
 
 func main() {
-	con := Config{}
-	sanic(yaml.Unmarshal(c, &con))
+	var con Config
+	sanic(yaml.Unmarshal(must(os.ReadFile("config.yaml")), &con))
 	sanic(http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimRight(must(url.ParseRequestURI(r.RequestURI)).Path, "/")
 		w.Header().Set("Location", lengthen(con, r.Host, path))
